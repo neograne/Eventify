@@ -1,7 +1,5 @@
 # EventMaster
-#
-пупупуп, всякое описание проекта
-#
+пупупуп всякое описание проекта
 # Dependencies
 
 Для работы этого проекта необходимы следующие зависимости:
@@ -23,3 +21,12 @@
 ### Установка
 ```bash
 TODO: добавить комманды для развертывания докера
+
+```
+### Полезные ссылки
+- Документация **[Python](https://www.python.org)**
+- Документация **[FastApi](https://fastapi.tiangolo.com/learn/)**
+- Документация **[React Native](https://reactnative.dev/docs/getting-started)**
+- Документация **[Docker](https://docs.docker.com/guides/)**
+- Стилизация **[Коммитов](https://www.conventionalcommits.org/en/v1.0.0/)**
+- Гайд на **[Git](https://rogerdudler.github.io/git-guide/)**

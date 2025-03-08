@@ -1,4 +1,4 @@
-# EventMaster
+# Eventify
 пупупуп всякое описание проекта
 # Dependencies
 
@@ -7,8 +7,7 @@
 ## Основные зависимости
 
 ### Frontend
-- **[React Native](https://reactnative.dev/)** (версия 10.9.2) — библиотека для создания пользовательских интерфейсов.
-- **[Expo](https://expo.dev/)** (версия 52.0.37) — платформа для разработки мобильных приложений на React Native.
+- **[React](https://react.dev/)** (версия 10.9.2) — библиотека для создания пользовательских интерфейсов.
 
 ### Backend
 - **[Python](https://www.python.org)** (версия 3.13.2) — Язык программирования для Бекенда.
@@ -21,12 +20,11 @@
 ### Установка
 ```bash
 TODO: добавить комманды для развертывания докера
-
 ```
 ### Полезные ссылки
 - Документация **[Python](https://www.python.org)**
 - Документация **[FastApi](https://fastapi.tiangolo.com/learn/)**
-- Документация **[React Native](https://reactnative.dev/docs/getting-started)**
+- Документация **[React](https://react.dev/learn)**
 - Документация **[Docker](https://docs.docker.com/guides/)**
 - Стилизация **[Коммитов](https://www.conventionalcommits.org/en/v1.0.0/)**
 - Гайд на **[Git](https://rogerdudler.github.io/git-guide/)**

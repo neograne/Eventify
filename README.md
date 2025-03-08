@@ -1,4 +1,4 @@
-# EventMaster
+# Eventify
 пупупуп всякое описание проекта
 # Dependencies
 

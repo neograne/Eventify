@@ -1,14 +1,24 @@
 import './App.css';
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
-function App() {
+import Header from './components/Header';
+import NewMeeting from './pages/NewMeeting/NewMeeting';
+import Login from './pages/Login/Login';
+
+const App = () => {
   return (
-    <div>
-      <header>
-        <h2>Welcome to Eventify!</h2>
-        <a>The best app in th WORLD!</a>
-      </header>
-    </div>
+    <Router>
+      <div>
+        <Header />
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/new-meeting" element={<NewMeeting />} />
+        </Routes>
+      </div>
+    </Router>
   );
-}
+};
+
 
 export default App;

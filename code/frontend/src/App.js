@@ -3,17 +3,25 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 import Header from './components/Header';
-import NewMeeting from './pages/NewMeeting/NewMeeting';
-import Login from './pages/Login/Login';
+
+import NewCompetition from './pages/NewMeetingForm';
+import Login from './pages/LoginForm';
+import RegistrationForm from './pages/RegistrationForm';
+import AddSpeakerForm from './pages/AddSpeakerForm';
+import Main from './pages/Main';
+
 
 const App = () => {
   return (
     <Router>
       <div>
-        <Header />
+        <Header/>
         <Routes>
+          <Route path="/" element={<Main />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/new-meeting" element={<NewMeeting />} />
+          <Route path="/reg" element={<RegistrationForm />} />
+          <Route path="/new-meeting" element={<NewCompetition />} />
+          <Route path="/new-meeting/add-speaker" element={<AddSpeakerForm />} />
         </Routes>
       </div>
     </Router>

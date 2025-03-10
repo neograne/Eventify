@@ -16,9 +16,6 @@
    docker-compose build
    docker-compose up
    ```
-
-## Dependencies
-Для работы этого проекта необходимы следующие зависимости:
 ## Основные зависимости
 
 ### Frontend

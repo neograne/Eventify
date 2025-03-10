@@ -29,10 +29,6 @@
 - lol
 - kek
 
-### Установка
-```bash
-TODO: добавить комманды для развертывания докера
-```
 ### Полезные ссылки
 - Документация **[Python](https://www.python.org)**
 - Документация **[FastApi](https://fastapi.tiangolo.com/learn/)**

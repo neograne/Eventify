@@ -9,6 +9,7 @@ import Login from './pages/LoginForm';
 import RegistrationForm from './pages/RegistrationForm';
 import AddSpeakerForm from './pages/AddSpeakerForm';
 import Main from './pages/Main';
+import Footer from './components/Footer';
 
 
 const App = () => {
@@ -23,6 +24,7 @@ const App = () => {
           <Route path="/new-meeting" element={<NewCompetition />} />
           <Route path="/new-meeting/add-speaker" element={<AddSpeakerForm />} />
         </Routes>
+        <Footer/>
       </div>
     </Router>
   );

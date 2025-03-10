@@ -13,7 +13,7 @@
    Либо же самостоятельно через командную строку выполните:
 
    ```bash
-   docker-compose build
+   docker-compose build --no-cache
    docker-compose up
    ```
 ## Основные зависимости

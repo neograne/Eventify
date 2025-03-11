@@ -1,14 +1,20 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import logo from '../img/logo.png';
 
 const Header = () => {
   return (
     <nav style={styles.container}>
-        <Link style={styles.item} to="/">Главная</Link>
-        <Link style={styles.item} to="/reg">Зарегистрироваться</Link>
-        <Link style={styles.item} to="/login">Войти</Link>
-        <Link style={styles.item} to="/new-meeting">Создать митинг</Link>
-        <Link style={styles.item} to="/new-meeting/add-speaker">Добавить спикера</Link>
+      <div style={styles.box}>
+        <a href="/#" style={styles.logo}>
+          <img src={logo} alt="logo" width={49} height={49}/>
+          <text style={styles.name}>Eventify</text>
+        </a>
+        <ul style={styles.horizontalList}>
+          <li style={styles.item}><a style={styles.a} href="/">Мероприятия</a></li>
+          <li style={styles.item}><a style={styles.a} href="/about-product">О продукте</a></li>
+          <li style={styles.item}><a style={styles.a} href="/login">Войти</a></li>
+        </ul>
+      </div>
     </nav>
   );
 };
@@ -16,13 +22,47 @@ const Header = () => {
 const styles = {
   container: {
     display: "flex",
-    justifyContent: "right",
-    height: "50px",
-    border: "2px solid #ccc",
+    justifyContent: "center",
+    alignItems: 'center',
+    height: "132px",
+    width: "100%",
+    border: "1px solid #354A77",
+
+    fontSize: "30px",
+    fontFamily: "Montserrat, sans-serif",
+  },
+  horizontalList: {
+    display: "flex",
+    listStyle: "none",
+    marginRight: "48px",
   },
   item: {
-    fontSize: "16px", // Восстанавливаем размер шрифта
-    marginRight: "10px", // Расстояние между элементами
+    marginLeft: "41px",
+    color: "black",
+  },
+  box: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: 'center',
+    height: "80px",
+    width: "83%",
+    minWidth: "740px",
+    boxShadow: "0 7px 15px #00000040",
+    borderRadius: "1000px",
+    backgroundColor: "#FCFCFC",
+  },
+  logo: {
+    display: "flex",
+    alignItems: 'center',
+    margin: "42px",
+    fontSize: "36px",
+    textDecoration: "none",
+    color: "inherit",
+    gap: "14px",
+  },
+  a: {
+    textDecoration: "none",
+    color: "inherit"
   },
 }
 

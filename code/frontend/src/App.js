@@ -11,23 +11,26 @@ import Main from './pages/Main';
 import Footer from './components/Footer';
 
 
-const App = () => {
+function App() {
   return (
     <Router>
       <div>
-        <Header/>
-        <Routes>
-          <Route path="/" element={<Main />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/reg" element={<RegistrationForm />} />
-          <Route path="/new-meeting" element={<NewCompetition />} />
-          <Route path="/new-meeting/add-speaker" element={<AddSpeakerForm />} />
-        </Routes>
-        <Footer/>
+        <Header />
+        <main>
+          <Routes>
+            <Route path="/" element={<Main />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/reg" element={<RegistrationForm />} />
+            <Route path="/new-meeting" element={<NewCompetition />} />
+            <Route path="/new-meeting/add-speaker" element={<AddSpeakerForm />} />
+          </Routes>
+        </main>
+
+        <Footer />
       </div>
     </Router>
   );
-};
+}
 
 
 export default App;

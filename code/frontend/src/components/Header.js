@@ -1,5 +1,6 @@
 import React from 'react';
 import logo from '../img/logo.png';
+import '../fonts/fonts.css';
 
 const Header = () => {
   return (
@@ -26,10 +27,10 @@ const styles = {
     alignItems: 'center',
     height: "132px",
     width: "100%",
-    border: "1px solid #354A77",
+    borderBottom: "1px solid #354A77",
 
     fontSize: "30px",
-    fontFamily: "Montserrat, sans-serif",
+    fontFamily: "Montserrat",
   },
   horizontalList: {
     display: "flex",
@@ -45,7 +46,7 @@ const styles = {
     justifyContent: "space-between",
     alignItems: 'center',
     height: "80px",
-    width: "83%",
+    width: "83.333%",
     minWidth: "740px",
     boxShadow: "0 7px 15px #00000040",
     borderRadius: "1000px",

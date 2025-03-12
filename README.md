@@ -29,8 +29,10 @@
 ## Разработчики👩‍💻: 
 **Я и еще 3 чела**
 
-[![Dima](https://github.com/user-attachments/assets/4c1e9f25-22d5-4d91-904f-643ac4d40d10)](https://github.com/Dimasiggs) | [![neograne](https://github.com/user-attachments/assets/4c1e9f25-22d5-4d91-904f-643ac4d40d10)](https://github.com/neograne) | [![Mishanou](https://github.com/user-attachments/assets/4c1e9f25-22d5-4d91-904f-643ac4d40d10)](https://github.com/Mishanou) | [![Tale1337](https://github.com/user-attachments/assets/4c1e9f25-22d5-4d91-904f-643ac4d40d10)](https://github.com/Tale1337) | 
+
+Разраб | Тимлид | Дизайнер | Аналитик
 ---|---|---|---
+[![Dima](https://github.com/user-attachments/assets/4c1e9f25-22d5-4d91-904f-643ac4d40d10)](https://github.com/Dimasiggs) | [![neograne](https://github.com/user-attachments/assets/4c1e9f25-22d5-4d91-904f-643ac4d40d10)](https://github.com/neograne) | [![Mishanou](https://github.com/user-attachments/assets/4c1e9f25-22d5-4d91-904f-643ac4d40d10)](https://github.com/Mishanou) | [![Tale1337](https://github.com/user-attachments/assets/4c1e9f25-22d5-4d91-904f-643ac4d40d10)](https://github.com/Tale1337) | 
 [Dimasiggs](https://github.com/Dimasiggs) | [neograne](https://github.com/neograne) | [Mishanou](https://github.com/Mishanou) | [Tale1337](https://github.com/Tale1337)
 
 ### Полезные ссылки

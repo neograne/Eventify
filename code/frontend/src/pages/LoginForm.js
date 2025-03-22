@@ -1,15 +1,16 @@
 import React, { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 
 const LoginForm = () => {
   // Состояния для хранения данных формы
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // Обработчик отправки формы
+  const navigate = useNavigate();
   const handleSubmit = (e) => {
     e.preventDefault(); // Предотвращаем перезагрузку страницы
     console.log("Вход:", { email, password });
-    // Здесь можно добавить логику для отправки данных на сервер
+    navigate('/profile');
   };
 
   return (
@@ -45,8 +46,16 @@ const LoginForm = () => {
         <button type="submit" style={styles.button}>
           Войти
         </button>
-
-        
+        <div style={styles.buttons}>
+          <div>
+            <p>Нет аккаунта?</p> 
+            <a href="/auth/registration"><p>Зарегистрироваться</p></a>
+          </div>
+          <div>
+            <p>Забыли пароль?</p> 
+            <a href="/auth/reset-password"><p>Восстановить</p></a>
+          </div>
+        </div>
       </form>
     </div>
   );
@@ -88,6 +97,10 @@ const styles = {
     borderRadius: "4px",
     cursor: "pointer",
   },
+  buttons: {
+    display: "flex",
+    gap: "100px"
+  }
 };
 
 export default LoginForm;

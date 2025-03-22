@@ -6,14 +6,14 @@ const Header = () => {
   return (
     <nav style={styles.container}>
       <div style={styles.box}>
-        <a href="/#" style={styles.logo}>
+        <a href="/" style={styles.logo}>
           <img src={logo} alt="logo" width={49} height={49}/>
           <text style={styles.name}>Eventify</text>
         </a>
         <ul style={styles.horizontalList}>
-          <li style={styles.item}><a style={styles.a} href="/">Мероприятия</a></li>
+          <li style={styles.item}><a style={styles.a} href="/list">Мероприятия</a></li>
           <li style={styles.item}><a style={styles.a} href="/about-product">О продукте</a></li>
-          <li style={styles.item}><a style={styles.a} href="/login">Войти</a></li>
+          <li style={styles.item}><a style={styles.a} href="/auth/login">Войти</a></li>
         </ul>
       </div>
     </nav>

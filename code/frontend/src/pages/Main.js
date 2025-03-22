@@ -1,5 +1,6 @@
 import React from "react";
 import calendar from "../img/calendar.png";
+import calendarIcon from "../img/calendarIcon.png";
 import '../fonts/fonts.css';
 
 const Main = () => {
@@ -19,9 +20,23 @@ const Main = () => {
       </section>
 
       <section style={{...styles.section2, ...styles.section}}>
-        <h1 style={{...styles.title, ...styles.title2}}>Управляйте всеми мероприятиями в одном месте</h1>
-        <p style={{...styles.text, ...styles.text2}}>Организуйте или записывайтесь на концерты, встречи, и любые другие активности!</p>
-        <img src={calendar} style={styles.img} alt="img"/>
+        <ul style={styles.advantageList}>
+          <li style={styles.advantageItem}>
+            <img style={styles.advantageImg} src={calendarIcon} alt="advantage"/>
+            <h3 style={styles.advantageText}>У нас пиздец какой удобный календарь</h3>
+          </li>
+          <li style={styles.advantageItem}>
+            <img style={styles.advantageImg} src={calendarIcon} alt="advantage"/>
+            <h3 style={styles.advantageText}>Поём тоже неплохо</h3>
+          </li>
+          <li style={styles.advantageItem}>
+            <img style={styles.advantageImg} src={calendarIcon} alt="advantage"/>
+            <h3 style={styles.advantageText}>А шашлыки мы как готовим ууууу</h3>
+          </li>
+        </ul>
+        {/* <h1 style={{...styles.title, ...styles.title2}}>Управляйте всеми мероприятиями в одном месте</h1> */}
+        {/* <p style={{...styles.text, ...styles.text2}}>Организуйте или записывайтесь на концерты, встречи, и любые другие активности!</p> */}
+        {/* <img src={calendar} style={styles.img} alt="img"/> */}
       </section>
 
       <section style={{...styles.section3, ...styles.section}}>
@@ -56,12 +71,8 @@ const styles = {
   section: {
     borderBottom: "1px solid #354A77",
     paddingLeft: "160px",
-    paddingRight: "160px",
-    marginTop: "140px",
   },
   img: {
-    height: "100%",
-    width: "100%",
     marginBottom: "61px",
     marginTop: "-27px",
   },
@@ -69,6 +80,7 @@ const styles = {
   section1: {
     display: "flex",
     gap: "254px",
+    paddingTop: "140px",
   },
   text1: {
     width: "650px",
@@ -89,7 +101,7 @@ const styles = {
     
     height: "93px",
     
-    marginTop: "54px"
+    marginTop: "54px",
   },
   loginButton: {
     display: "flex",
@@ -117,7 +129,43 @@ const styles = {
     width: "244px",
   },
 
+  advantageList: {
+    display: "flex",
+    justifyContent: "center",
+    gap: "199px",
+    listStyle: "none",  
+    marginTop: "0",
+    paddingTop: "85px",
+  },
+  advantageItem: {
+    textAlign: 'center',
+    width: "278px",
+    height: "249px",
+
+  },
+  advantageImg: {
+    width: "100px",
+    height: "100px",
+    display: "block",
+    marginLeft: "auto",
+    marginRight: "auto",
+
+  },
+  advantageText: {
+    textAlign: "center",
+    lineHeight: "100%",
+    fontSize: "28px",
+    marginTop: "19px",
+    height: "130px",
+    fontWeight: "500",
+    letterSpacing: 2.5,
+    lineHeight: 1.24,
+    color: "#3D6D8E",
+
+  },
+
   section2: {
+    height: "915px",
     
   },
   text2: {

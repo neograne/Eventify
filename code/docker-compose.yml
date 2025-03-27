@@ -1,11 +1,19 @@
 version: '3.8'
 services:
-  app:
+  frontend:
     build: ./frontend
     ports:
       - "3000:3000"
     volumes:
-      - ./frontend/:/app
-      - /app/node_modules
+      - ./frontend/:/front
+      - /front/node_modules
     environment:
       - CHOKIDAR_USEPOLLING=true
+    
+  server:
+    build: ./server
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_ENV=production
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --workers 4

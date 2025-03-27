@@ -15,7 +15,7 @@ class User(BaseModel):
     full_name: Optional[str] = None
 
 
-@app.get("/api")
+@app.get("/")
 async def root():
     return {"message": "Добро пожаловать в API!"}
 

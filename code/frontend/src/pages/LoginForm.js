@@ -3,16 +3,29 @@ import { useNavigate } from 'react-router-dom';
 
 const LoginForm = () => {
   // Состояния для хранения данных формы
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState({ email: '', password: '' });
 
   const navigate = useNavigate();
-  const handleSubmit = (e) => {
-    e.preventDefault(); // Предотвращаем перезагрузку страницы
-    console.log("Вход:", { email, password });
-    navigate('/profile');
-  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch('http://localhost:8000/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
 
+      if (response.status === 200) {
+        navigate('/profile');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+    
+  };
+  
   return (
     <div style={styles.container}>
       <h2>Вход</h2>
@@ -24,8 +37,8 @@ const LoginForm = () => {
           <input
             type="email"
             id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={formData.email}
+            onChange={(e) => setFormData({...formData, email: e.target.value})}
             style={styles.input}
             required
           />
@@ -37,8 +50,8 @@ const LoginForm = () => {
           <input
             type="password"
             id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={formData.password}
+            onChange={(e) => setFormData({...formData, password: e.target.value})}
             style={styles.input}
             required
           />

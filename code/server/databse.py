@@ -1,7 +1,7 @@
 import psycopg2
 from psycopg2 import sql
 
-class PostgreSQLManager:
+class database:
     def __init__(self, dbname, user, password, host='localhost', port=5432):
         self.connection = None
         self.cursor = None

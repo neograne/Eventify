@@ -1,31 +1,49 @@
 import React, { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 
 const RegistrationForm = () => {
-  // Состояния для хранения данных формы
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState({ email: '', password: '', username: '' });
+  const [showError, setShowError] = useState(false); // Состояние для отображения ошибки
+  const navigate = useNavigate();
 
-  // Обработчик отправки формы
-  const handleSubmit = (e) => {
-    e.preventDefault(); // Предотвращаем перезагрузку страницы
-    console.log("Регистрация:", { name, email, password });
-    // Здесь можно добавить логику для отправки данных на сервер
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch('http://localhost:8000/add_user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+      
+      if (response.status === 200) {
+        navigate('/profile');
+      } else {
+        setShowError(true); // Показываем ошибку, если статус не 200
+        setTimeout(() => setShowError(false), 3000); // Автоматическое скрытие через 3 секунды
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setShowError(true);
+      setTimeout(() => setShowError(false), 3000);
+    }
   };
 
   return (
     <div style={styles.container}>
       <h2>Регистрация</h2>
       <form onSubmit={handleSubmit} style={styles.form}>
+        {/* Поля формы остаются без изменений */}
         <div style={styles.formGroup}>
           <label htmlFor="name" style={styles.label}>
             Имя:
           </label>
           <input
             type="text"
-            id="name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            id="username"
+            value={formData.username}
+            onChange={(e) => setFormData({...formData, username: e.target.value})}
             style={styles.input}
             required
           />
@@ -37,8 +55,8 @@ const RegistrationForm = () => {
           <input
             type="email"
             id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={formData.email}
+            onChange={(e) => setFormData({...formData, email: e.target.value})}
             style={styles.input}
             required
           />
@@ -50,8 +68,8 @@ const RegistrationForm = () => {
           <input
             type="password"
             id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={formData.password}
+            onChange={(e) => setFormData({...formData, password: e.target.value})}
             style={styles.input}
             required
           />
@@ -60,6 +78,13 @@ const RegistrationForm = () => {
           Зарегистрироваться
         </button>
       </form>
+
+      {/* Всплывающее окно с ошибкой */}
+      {showError && (
+        <div style={styles.errorPopup}>
+          Эта почта или логин уже зарегестрированы
+        </div>
+      )}
     </div>
   );
 };
@@ -101,6 +126,23 @@ const styles = {
     borderRadius: "4px",
     cursor: "pointer",
   },
+  errorPopup: {
+    position: 'fixed',
+    top: '20px',
+    left: '50%',
+    transform: 'translateX(-50%)',
+    backgroundColor: '#ff4444',
+    color: 'white',
+    padding: '15px 30px',
+    borderRadius: '4px',
+    boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
+    zIndex: 1000,
+    animation: 'fadeIn 0.3s',
+  },
+  '@keyframes fadeIn': {
+    from: { opacity: 0, top: 0 },
+    to: { opacity: 1, top: '20px' }
+  }
 };
 
 export default RegistrationForm;

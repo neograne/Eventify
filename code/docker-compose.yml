@@ -16,4 +16,26 @@ services:
       - "8000:8000"
     environment:
       - APP_ENV=production
+    volumes:
+      - .:/app
+      - /app/.venv
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --workers 4
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: username
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: database
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U username -d database"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:

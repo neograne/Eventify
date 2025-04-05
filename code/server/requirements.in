@@ -1,0 +1,4 @@
+fastapi==0.115.12
+psycopg2==2.9.10
+pydantic==2.11.2
+pydantic[email]==2.11.2

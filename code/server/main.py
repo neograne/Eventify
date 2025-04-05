@@ -1,6 +1,8 @@
 from hashlib import sha256
 import string
 import random
+#from jose import JWTError, jwt
+#from datetime import datetime, timedelta
 
 from fastapi import FastAPI, HTTPException, Query
 from pydantic import BaseModel, EmailStr
@@ -12,6 +14,13 @@ from fastapi.responses import JSONResponse
 db = database("database", "username", "password")
 db.connect()
 app = FastAPI()
+
+
+# Конфиг
+SECRET_KEY = "your-secret-key"  # На продакшене используйте .env
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_DAYS = 30  # Срок жизни токена
+
 
 origins = [
     "http://localhost:3000",
@@ -50,8 +59,19 @@ def create_salt() -> str:
     return "".join(salt)
 
 
-def hash(password: str, salt: str) -> str:
+def hash_password(password: str, salt: str) -> str:
     return sha256((password + salt).encode('utf-8')).hexdigest()
+
+
+# Генерация токена
+# def create_access_token(data: dict, expires_delta: timedelta = None):
+#     to_encode = data.copy()
+#     if expires_delta:
+#         expire = datetime.utcnow() + expires_delta
+#     else:
+#         expire = datetime.utcnow() + timedelta(minutes=15)
+#     to_encode.update({"exp": expire})
+#     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 
 @app.get("/")
@@ -79,7 +99,7 @@ async def user(form_data: dict):
         print(data)
         print()
 
-        if hash(form_data['password'], data[2]) == data[1]:
+        if hash_password(form_data['password'], data[2]) == data[1]:
             return JSONResponse(
                 content={"message": "Все супер!"},
                 status_code=200,
@@ -105,7 +125,7 @@ async def add_user(form_data: dict):
         db.insert("users", {
             "email": form_data["email"],
             "username": form_data["username"],
-            "password_hash": hash(form_data["password"], salt),
+            "password_hash": hash_password(form_data["password"], salt),
             "salt": salt,
         })
         return JSONResponse(

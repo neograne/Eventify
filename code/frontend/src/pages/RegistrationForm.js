@@ -19,7 +19,9 @@ const RegistrationForm = () => {
       
       if (response.status === 200) {
         navigate('/profile');
-      } else {
+      } if (response.status === 500) {
+        ;
+      }else {
         setShowError(true); // Показываем ошибку, если статус не 200
         setTimeout(() => setShowError(false), 3000); // Автоматическое скрытие через 3 секунды
       }

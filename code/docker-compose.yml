@@ -1,4 +1,5 @@
 version: '3.8'
+
 services:
   frontend:
     build: ./frontend
@@ -16,10 +17,11 @@ services:
       - "8000:8000"
     environment:
       - APP_ENV=production
-    volumes:
-      - .:/app
-      - /app/.venv
-    command: uvicorn main:app --host 0.0.0.0 --port 8000 --workers 4
+      - DATABASE_URL=postgresql://username:password@db:5432/database
+    depends_on:
+      db:
+        condition: service_healthy
+    command: sh -c "sleep 5 && uvicorn main:app --host 0.0.0.0 --port 8000 --workers 4"
 
   db:
     image: postgres:15-alpine

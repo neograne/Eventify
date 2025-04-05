@@ -2,7 +2,7 @@ import psycopg2
 from psycopg2 import sql
 
 class database:
-    def __init__(self, dbname, user, password, host='localhost', port=5432):
+    def __init__(self, dbname, user, password, host='0.0.0.0', port=5432):
         self.connection = None
         self.cursor = None
         self.dbname = dbname

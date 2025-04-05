@@ -11,10 +11,9 @@ from databse import database
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-db = database("database", "username", "password")
+db = database("database", "username", "password", "db", "5432")
 db.connect()
 app = FastAPI()
-
 
 # Конфиг
 SECRET_KEY = "your-secret-key"  # На продакшене используйте .env
@@ -60,7 +59,7 @@ def create_salt() -> str:
 
 
 def hash_password(password: str, salt: str) -> str:
-    return sha256((password + salt).encode('utf-8')).hexdigest()
+    return sha256((salt + password).encode('utf-8')).hexdigest()
 
 
 # Генерация токена
@@ -121,16 +120,24 @@ async def add_user(form_data: dict):
         )
     
     if not user_exists:
-        salt = create_salt()
-        db.insert("users", {
-            "email": form_data["email"],
-            "username": form_data["username"],
-            "password_hash": hash_password(form_data["password"], salt),
-            "salt": salt,
-        })
-        return JSONResponse(
-            content={"message": "Все супер!"},
-            status_code=200,
+        try:
+            print(form_data)
+            salt = create_salt()
+            db.insert("users", {
+                "email": form_data["email"],
+                "username": form_data["username"],
+                "password_hash": hash_password(form_data["password"], salt),
+                "salt": salt,
+            })
+            return JSONResponse(
+                content={"message": "Все супер!"},
+                status_code=200,
+                headers={"X-Header": "Value"}
+                )
+        except:
+            return JSONResponse(
+            content={"message": "ошибка"},
+            status_code=500,
             headers={"X-Header": "Value"}
             )
     else:

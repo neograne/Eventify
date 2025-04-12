@@ -74,8 +74,11 @@ class AsyncDatabase:
     async def exists(self, table: str, condition: str, *args) -> bool:
         """Асинхронная проверка существования записи в таблице."""
         query = f"SELECT EXISTS(SELECT 1 FROM {table} WHERE {condition})"
-        result = await self.fetch_one(query, *args)
-        return result[0] if result else False
+        try:
+            result = await self.fetch_one(query, *args)
+            return result[0] if result else False
+        except:
+            return False
 
     async def update(self, table: str, data: Dict[str, Any], condition: str, *args) -> None:
         """Асинхронное обновление записи в таблице."""

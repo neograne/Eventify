@@ -12,11 +12,26 @@ const ProfilePage = () => {
     tags: [],
     newTag: ''
   });
+  const [userData, setUserData] = useState({
+    avatar: 'https://via.placeholder.com/150',
+    fullName: 'Иванов Иван Иванович',
+    email: '',
+    password: 'password123',
+    birthDate: '1990-01-01',
+    institute: 'Институт компьютерных технологий',
+    group: 'КТ-123'
+  });
+  const [editable, setEditable] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setEventData(prev => ({ ...prev, [name]: value }));
   };
+
+  const handleUserInputChange = (e) => {
+    const { name, value } = e.target;
+    setUserData(prev => ({ ...prev, [name]: value }));
+ };
 
   const handleTagAdd = () => {
     if (eventData.newTag && !eventData.tags.includes(eventData.newTag)) {
@@ -33,6 +48,23 @@ const ProfilePage = () => {
       ...prev,
       tags: prev.tags.filter(tag => tag !== tagToRemove)
     }));
+  };
+
+  const handleAvatarChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setUserData(prev => ({ ...prev, avatar: reader.result }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSave = () => {
+    setEditable(false);
+    // Здесь можно добавить логику сохранения данных
+    console.log('Данные сохранены:', userData);
   };
 
   // Стили
@@ -154,29 +186,68 @@ const ProfilePage = () => {
       maxWidth: '100%',
       maxHeight: '180px',
       borderRadius: '6px'
-    }
+    },
+    avatarContainer: {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      marginBottom: '30px'
+    },
+    avatar: {
+      width: '150px',
+      height: '150px',
+      borderRadius: '50%',
+      objectFit: 'cover',
+      marginBottom: '15px',
+      border: '3px solid #007bff'
+    },
+    changeAvatarButton: {
+      backgroundColor: '#6c757d',
+      color: 'white',
+      padding: '8px 15px',
+      border: 'none',
+      borderRadius: '4px',
+      cursor: 'pointer',
+      fontSize: '14px'
+    },
   };
 
   const renderContent = () => {
     switch(activeTab) {
       case 'info':
-        return <UserInfo styles={styles} />;
+        return <UserInfo 
+          styles={styles} 
+          userData={userData} 
+          editable={editable}
+          handleInputChange={handleUserInputChange}
+          handleAvatarChange={handleAvatarChange}
+          handleSave={handleSave}
+          setEditable={setEditable}
+        />;
       case 'organized':
         return <OrganizedEvents styles={styles} />;
       case 'attended':
         return <AttendedEvents styles={styles} />;
       case 'calendar':
         return <EventsCalendar styles={styles} />;
-      case 'create':
-        return <CreateEvent 
-          styles={styles} 
-          eventData={eventData}
-          handleInputChange={handleInputChange}
-          handleTagAdd={handleTagAdd}
-          handleTagRemove={handleTagRemove}
-        />;
+        case 'create':
+          return <CreateEvent 
+            styles={styles} 
+            eventData={eventData}
+            handleInputChange={handleInputChange}
+            handleTagAdd={handleTagAdd}
+            handleTagRemove={handleTagRemove}
+          />;
       default:
-        return <UserInfo styles={styles} />;
+        return <UserInfo 
+          styles={styles} 
+          userData={userData} 
+          editable={editable}
+          handleInputChange={handleUserInputChange}
+          handleAvatarChange={handleAvatarChange}
+          handleSave={handleSave}
+          setEditable={setEditable}
+        />;
     }
   };
 
@@ -244,21 +315,124 @@ const ProfilePage = () => {
 };
 
 // Компоненты для каждого раздела
-const UserInfo = ({ styles }) => (
+const UserInfo = ({ styles, userData, editable, handleInputChange, handleAvatarChange, handleSave, setEditable }) => (
   <div>
     <h2 style={styles.sectionTitle}>Личная информация</h2>
-    <div style={styles.formGroup}>
-      <label style={styles.label}>Имя:</label>
-      <p>Иван Иванов</p>
+    
+    <div style={styles.avatarContainer}>
+      <img 
+        src={userData.avatar} 
+        alt="Аватар" 
+        style={styles.avatar}
+      />
+      <input 
+        type="file" 
+        accept="image/*" 
+        onChange={handleAvatarChange}
+        style={{ display: 'none' }}
+        id="avatarUpload"
+        disabled={!editable}
+      />
+      <label 
+        htmlFor="avatarUpload" 
+        style={{
+          ...styles.changeAvatarButton,
+          opacity: editable ? 1 : 0.6,
+          cursor: editable ? 'pointer' : 'not-allowed'
+        }}
+      >
+        Изменить аватар
+      </label>
     </div>
+
     <div style={styles.formGroup}>
-      <label style={styles.label}>Email:</label>
-      <p>example@mail.com</p>
+      <label style={styles.label}>ФИО</label>
+      <input
+        type="text"
+        name="fullName"
+        value={userData.fullName}
+        onChange={handleInputChange}
+        style={styles.input}
+        disabled={!editable}
+      />
+
     </div>
+
     <div style={styles.formGroup}>
-      <label style={styles.label}>Дата регистрации:</label>
-      <p>01.01.2023</p>
+      <label style={styles.label}>Почта</label>
+      <input
+        type="email"
+        name="email"
+        value={userData.email}
+        onChange={handleInputChange}
+        style={styles.input}
+        disabled={!editable}
+      />
     </div>
+
+    <div style={styles.formGroup}>
+      <label style={styles.label}>Пароль</label>
+      <input
+        type="password"
+        name="password"
+        value={userData.password}
+        onChange={handleInputChange}
+        style={styles.input}
+        disabled={!editable}
+      />
+    </div>
+
+    <div style={styles.formGroup}>
+      <label style={styles.label}>Дата рождения</label>
+      <input
+        type="date"
+        name="birthDate"
+        value={userData.birthDate}
+        onChange={handleInputChange}
+        style={styles.input}
+        disabled={!editable}
+      />
+    </div>
+
+    <div style={styles.formGroup}>
+      <label style={styles.label}>Институт</label>
+      <input
+        type="text"
+        name="institute"
+        value={userData.institute}
+        onChange={handleInputChange}
+        style={styles.input}
+        disabled={!editable}
+      />
+    </div>
+
+    <div style={styles.formGroup}>
+      <label style={styles.label}>Группа</label>
+      <input
+        type="text"
+        name="group"
+        value={userData.group}
+        onChange={handleInputChange}
+        style={styles.input}
+        disabled={!editable}
+      />
+    </div>
+
+    {editable ? (
+      <button 
+        style={styles.saveButton}
+        onClick={handleSave}
+      >
+        Сохранить
+      </button>
+    ) : (
+      <button 
+        style={styles.editButton}
+        onClick={() => setEditable(true)}
+      >
+        Редактировать
+      </button>
+    )}
   </div>
 );
 

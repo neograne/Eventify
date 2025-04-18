@@ -63,7 +63,6 @@ const styles = {
     
   },
   a: {
-    textDecoration: "none",
     color: "inherit"
   },
   img: {

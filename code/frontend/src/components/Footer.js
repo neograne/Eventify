@@ -4,12 +4,15 @@ import teamLogo from '../img/teamLogo.png';
 const Footer = () => {
   return (
     <nav style={styles.container}>
-        <a href="/git">
-          <img style={styles.logo} src={teamLogo}/>
+        <a href="/git" style={styles.logo}>
+          <img src={teamLogo} width={68}/>
+          <p>В IT И ВЫЙТИ</p>
         </a>
-        <a style={styles.item} href="/about">О продукте</a>
-        <a style={styles.item} href="/faq">FAQ</a>
-        <a style={styles.item} href="/contacts">Contact us</a>
+        <ul style={styles.list}>
+          <li><a style={styles.item} href="/about">О продукте</a></li>
+          <li><a style={styles.item} href="/faq">FAQ</a></li>
+          <li><a style={styles.item} href="/contacts">Contact us</a></li>
+        </ul>
     </nav>
   );
 };
@@ -18,25 +21,39 @@ const styles = {
   container: {
     display: "flex",
     justifyContent: "center",
-    height: "50px",
-
-    left: "0",
-    bottom: "0",
+    alignItems: 'center',
     width: "100%",
-    backgroundColor: "#333",
+
+    fontFamily: "Montserrat",
+    height: "100px",
+
     color: "white",
     textAlign: "center",
-    padding: "10px 0",
+    gap: "813px",
+    backgroundColor: "#20516F",
   },
+  list: {
+    display: "flex",
+    gap: "57px",
+    listStyle: "none",
+  },
+  
   item: {
     fontSize: "16px", // Восстанавливаем размер шрифта
     marginRight: "10px", // Расстояние между элементами
     color: "white",
+    textDecoration: "none",
+    fontSize: "24px",
   },
 
   logo: {
-    width: "68px",
-  }
+    display: "flex",
+    alignItems: 'center',
+    gap: "21px",
+    color: "white",
+    textDecoration: "none",
+    fontSize: "32px"
+  },
 }
 
 export default Footer;

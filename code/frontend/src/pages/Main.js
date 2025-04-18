@@ -4,7 +4,8 @@ import checkmark from "../img/checkmark.png";
 import notification from "../img/notification.png";
 import meeting from "../img/meeting.png";
 import features from "../img/features.png";
-import butterfly from "../img/butterfly.png";
+import butterfly1 from "../img/butterfly1.svg";
+import butterfly2 from "../img/butterfly2.svg";
 import girl_cries from "../img/girl_cries.png"
 import '../fonts/fonts.css';
 
@@ -45,7 +46,7 @@ const Main = () => {
         <img src={features} alt="features" style={styles.section3Img} />
           <div style={styles.section3Text}>
             <h2 style={styles.section3Title}>Мы предлагаем удобный инструмент для организаторов</h2>
-            <p style={styles.section3Description}>Быстрое создание и редактирование мероприятий, управление участниками и конечно же куча свага!</p>
+            <p style={styles.section3Description}>Быстрое создание и редактирование мероприятий, управление участниками и конечно же куча свэга!</p>
           </div>
         </div>
       </section>
@@ -56,15 +57,14 @@ const Main = () => {
             <h2 style={styles.section4Title}>Организовать мероприятие легче с нашим сервисом</h2>
             <p style={styles.section4Text}>Никто не пришел на фан встречу? С нами такой проблемы не будет!</p>
           </div>
-          <div style={styles.section4Middle}>
-            <img src={girl_cries} alt="girl_cries" style={styles.girlCriesImg} />
-          </div>
-          <div style={styles.section4Right}>
-            <img src={butterfly} alt="butterfly" style={styles.butterflyLeft} />
-            <a href="/organize" style={styles.startButton}>НАЧАТЬ ИСПОЛЬЗОВАНИЕ</a>
-            <img src={butterfly} alt="butterfly" style={styles.butterflyRight} />
-          </div>
+          <img src={girl_cries} alt="girl_cries" style={styles.girlCriesImg} />
         </div>
+      </section>
+
+      <section style={{ ...styles.section5, ...styles.section }}>
+        <img src={butterfly1} alt="butterfly1" style={styles.butterflyLeft} />
+        <a href="/organize" style={styles.startButton}>НАЧАТЬ ИСПОЛЬЗОВАНИЕ</a>
+        <img src={butterfly2} alt="butterfly2" style={styles.butterflyRight} />
       </section>
 
     </div>
@@ -188,8 +188,7 @@ const styles = {
   },
 
   section2: {
-    paddingTop: '80px',
-    paddingBottom: '120px',
+    marginTop: '215px',
   },
   advantagesContainer: {
     display: "flex",
@@ -203,8 +202,6 @@ const styles = {
     maxWidth: "280px",
   },
   advantageImg: {
-    width: "100px",
-    height: "100px",
     marginBottom: '20px',
   },
   advantageTitle: {
@@ -217,7 +214,6 @@ const styles = {
   },
 
   section3: {
-    paddingTop: '100px',
     paddingBottom: '100px',
   },
   section3Content: {
@@ -226,17 +222,18 @@ const styles = {
     alignItems: 'center',
   },
   section3Text: {
-    maxWidth: '550px',
+    maxWidth: '752px',
+    textAlign: "right"
   },
   section3Title: {
-    fontSize: '40px',
+    fontSize: '56px',
     fontWeight: '700',
     color: '#20516F',
     marginBottom: '20px',
     lineHeight: '1.2',
   },
   section3Description: {
-    fontSize: '24px',
+    fontSize: '28px',
     color: '#3D6D8E',
     fontWeight: '500',
     lineHeight: '1.3',
@@ -247,21 +244,24 @@ const styles = {
   },
 
   section4: {
+    display: "flex",
+
     paddingTop: '100px',
     paddingBottom: '100px',
   },
   section4Content: {
     display: 'flex',
-    flexDirection: 'column',
     alignItems: 'center',
     textAlign: 'center',
+    gap: "92px",
+    textAlign: "left"
   },
   section4Left: {
     marginBottom: '60px',
-    maxWidth: '800px',
+    maxWidth: '752px',
   },
   section4Title: {
-    fontSize: '40px',
+    fontSize: '56px',
     fontWeight: '700',
     color: '#20516F',
     marginBottom: '20px',
@@ -273,51 +273,41 @@ const styles = {
     fontWeight: '500',
     lineHeight: '1.3',
   },
-  section4Right: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '50px',
-  },
-  startButton: {
-    backgroundColor: '#CEDEFF',
-    color: 'black',
-    border: '3.5px solid black',
-    borderRadius: '100px',
-    padding: '20px 60px',
-    fontSize: '28px',
-    fontWeight: '500',
-    textDecoration: 'none',
-    textTransform: 'uppercase',
-  },
-  butterflyLeft: {
-    height: '60px',
-  },
-  butterflyRight: {
-    height: '60px',
+
+  girlCriesImg: {
+    maxWidth: "750px"
   },
 
-  footer: {
-    display: 'flex',
-    justifyContent: 'space-between',
+  section5: {
+    display: "flex",
+    justifyContent: "space-between",
     alignItems: 'center',
-    padding: '40px 160px',
-    fontSize: '16px',
-    color: '#354A77',
+    marginTop: '100px',
+    marginBottom: '130px',
+    gap: "250px",
+
+
   },
-  footerLeft: {
-    // Стили для левой части футера
-  },
-  footerRight: {
+  startButton: {
     display: 'flex',
-    gap: '30px',
-  },
-  footerLink: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    
+    backgroundColor: '#CEDEFF',
+    color: 'black',
     textDecoration: 'none',
-    color: '#354A77',
+    textTransform: 'uppercase',
+
+    border: '3.5px solid black',
+    borderRadius: '100px',
+
+    fontSize: '29px',
+    fontWeight: '500',
+    height: "134px",
+    width: "713px",
+
   },
-  footerText: {
-    margin: 0,
-  }
+
 };
 
 export default Main;

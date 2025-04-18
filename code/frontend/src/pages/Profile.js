@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState('info');
@@ -22,6 +23,40 @@ const ProfilePage = () => {
     group: 'КТ-123'
   });
   const [editable, setEditable] = useState(false);
+  const [authChecked, setAuthChecked] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('http://localhost:8000/check-auth', {
+          credentials: 'include'
+        });
+
+        if (!response.ok) {
+          navigate('/auth/registration');
+          return;
+        }
+
+        const data = await response.json();
+        if (!data.isAuthenticated) {
+          navigate('/auth/registration');
+        } else {
+          setAuthChecked(true);
+          // Можно обновить данные пользователя из data.user
+        }
+      } catch (error) {
+        console.error('Auth check failed:', error);
+        navigate('/auth/registration');
+      }
+    };
+
+    checkAuth();
+  }, [navigate]);
+
+  if (!authChecked) {
+    return <div>Проверка авторизации...</div>;
+  }
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

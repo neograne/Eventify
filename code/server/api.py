@@ -1,5 +1,5 @@
-import asyncio
-from fastapi import APIRouter
+import time
+from fastapi import FastAPI, Depends, HTTPException, Request, Response, APIRouter
 from fastapi.responses import JSONResponse
 from databse import AsyncDatabase
 from hashlib import sha256
@@ -10,6 +10,9 @@ router = APIRouter()
 db = AsyncDatabase("database", "username", "password", "localhost", "5432")
 
 pepper = "123"
+SECRET_KEY = secrets.token_urlsafe(32)
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 
 #TODO: Сделать проверку куки в бд
@@ -91,7 +94,7 @@ async def add_user(form_data: dict) -> JSONResponse:
             response.set_cookie( 
                 key="session_token",
                 value=token,
-                max_age=1,
+                max_age=100000000000000000,
                 secure=True,
                 httponly=True,
                 samesite="lax"
@@ -102,3 +105,17 @@ async def add_user(form_data: dict) -> JSONResponse:
             return JSONResponse(content={"message": "ошибка"}, status_code=500)
     else:
         return JSONResponse(content={"message": "Ползователь уже зарегестрирован"}, status_code=409)
+
+
+@router.get("/check-auth")
+async def check_auth(request: Request):
+    print(request.cookies.get("session_token"))
+    #time.sleep(5)
+    try:
+        await db.connect()
+        data = await db.fetch_one(f"SELECT user_id FROM sessions WHERE token = '{request.cookies.get("session_token")}'")
+        user_id = data["user_id"]
+
+        return {"isAuthenticated": True, "user": {"username": user_id}}
+    except HTTPException:
+        return {"isAuthenticated": False}

@@ -1,14 +1,15 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import teamLogo from '../img/teamLogo.png';
 
 const Footer = () => {
   return (
     <nav style={styles.container}>
-        <Link style={styles.item} to="/faq">FAQ</Link>
-        <Link style={styles.item} to="/about">About</Link>
-        <Link style={styles.item} to="/contacts">Связь с разработчиком</Link>
-        <Link style={styles.item} to="/git-hub">Git Hub проекта</Link>
-        <Link style={styles.item} to="/lol">лол</Link>
+        <a href="/git">
+          <img style={styles.logo} src={teamLogo}/>
+        </a>
+        <a style={styles.item} href="/about">О продукте</a>
+        <a style={styles.item} href="/faq">FAQ</a>
+        <a style={styles.item} href="/contacts">Contact us</a>
     </nav>
   );
 };
@@ -32,6 +33,10 @@ const styles = {
     marginRight: "10px", // Расстояние между элементами
     color: "white",
   },
+
+  logo: {
+    width: "68px",
+  }
 }
 
 export default Footer;

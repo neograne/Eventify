@@ -1,5 +1,6 @@
+import base64
 import time
-from fastapi import FastAPI, Depends, HTTPException, Request, Response, APIRouter
+from fastapi import FastAPI, Depends, HTTPException, Request, Response, APIRouter, File, UploadFile, Form
 from fastapi.responses import JSONResponse
 from databse import AsyncDatabase
 from hashlib import sha256
@@ -119,3 +120,28 @@ async def check_auth(request: Request):
         return {"isAuthenticated": True, "user": {"username": user_id}}
     except HTTPException:
         return {"isAuthenticated": FastAPI}
+
+
+@router.post("/update_user_info")
+async def update_user_info(request: Request, form_data: dict):
+    print(request.cookies.get("session_token"))
+    print(form_data)
+
+    if form_data["avatar"].startswith("data:image"):
+        header, encoded_image = form_data["avatar"].split(",", 1)
+    else:
+        return JSONResponse(status_code=400, content={"message": "Некорректный формат изображения"})
+    
+    try:
+        await db.connect()
+        data = await db.fetch_one(f"SELECT user_id FROM sessions WHERE token = '{request.cookies.get("session_token")}'")
+        user_id = data["user_id"]
+
+        #if await db.exists("students", "")
+
+        with open(f"../avatars/{user_id}.png", "wb") as file:
+            file.write(base64.b64decode(encoded_image))
+
+
+    except Exception as ex:
+        print(ex)

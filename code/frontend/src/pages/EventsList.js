@@ -17,7 +17,7 @@ const Events = () => {
         const mockEvents = Array.from({ length: eventCount }, (_, i) => ({
           id: i,
           name: `Мероприятие ${i}`,
-          date: `2023-05-${15 + Math.floor(i / 3)}`,
+          date: `2025-05-${15 + Math.floor(i / 16)}`,
           time: `${10 + (i % 5)}:00`,
           location: `Конференц-зал ${(i % 3) + 1}`,
           speakers: [

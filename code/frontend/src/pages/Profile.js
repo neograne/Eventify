@@ -96,10 +96,30 @@ const ProfilePage = () => {
     }
   };
 
-  const handleSave = () => {
-    setEditable(false);
-    // Здесь можно добавить логику сохранения данных
-    console.log('Данные сохранены:', userData);
+  const handleSave = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/update_user_info', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify(userData)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        alert(`Ошибка при сохранении: ${errorData.message || 'Что-то пошло не так'}`);
+        return;
+      }
+  
+      const result = await response.json();
+      console.log('Данные успешно сохранены:', result);
+      setEditable(false);
+    } catch (error) {
+      console.error('Ошибка при отправке запроса:', error);
+      alert('Произошла ошибка при сохранении. Проверьте соединение с сервером.');
+    }
   };
 
   // Стили

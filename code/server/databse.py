@@ -91,3 +91,77 @@ class AsyncDatabase:
         
         query = f"UPDATE {table} SET {set_clause} WHERE {condition}"
         await self.execute_query(query, *(values + list(args)))
+
+
+class Users:
+    def __init__(self, connection: AsyncDatabase):
+        self.connection = connection
+
+    def exists():
+        ...
+    
+    def get_by_id():
+        ...
+    
+    def get_by_session():
+        ...
+    
+    def add():
+        ...
+    
+    def delete():
+        ...
+    
+    def update():
+        ...
+    
+    def check_password():
+        ...
+
+    def get_user_salt():
+        ...
+
+    def is_session_token_active():
+        ...
+
+    def set_session_token():
+        ...
+    
+    def add_to_event():
+        ...
+    
+    def _():
+        ...
+    
+    def _():
+        ...
+    
+    def _():
+        ...
+    
+    def _():
+        ...
+
+
+class Events:
+    def __init__(self, connection: AsyncDatabase):
+        self.connection = connection
+
+    def exists():
+        ...
+    
+    def get_by_id():
+        ...
+    
+    def get_by_owner_id():
+        ...
+    
+    def add():
+        ...
+    
+    def delete():
+        ...
+    
+    def update():
+        ...
+

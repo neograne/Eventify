@@ -1,10 +1,15 @@
 import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/AuthContext';
 
 const RegistrationForm = () => {
   const [formData, setFormData] = useState({ email: '', password: '', username: '' });
   const [showError, setShowError] = useState(false); // Состояние для отображения ошибки
   const navigate = useNavigate();
+
+  const { useEffectAuthCheck } = useAuth();
+
+  useEffectAuthCheck(true, true);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

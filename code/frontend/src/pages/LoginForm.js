@@ -1,11 +1,18 @@
 import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/AuthContext';
 
 const LoginForm = () => {
   // Состояния для хранения данных формы
   const [formData, setFormData] = useState({ email: '', password: '' });
 
   const navigate = useNavigate();
+
+  const { useEffectAuthCheck } = useAuth();
+  
+    useEffectAuthCheck(true, true);
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {

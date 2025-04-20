@@ -29,6 +29,7 @@ const styles = {
     fontSize: "30px",
     fontFamily: "Montserrat",
     marginTop: "27px",
+    marginBottom: "27px"
   },
   horizontalList: {
     display: "flex",
@@ -56,20 +57,19 @@ const styles = {
     marginLeft: "20px",
     fontSize: "36px",
     textDecoration: "none",
-    color: "inherit",
     fontFamily: "Barlow Condensed",
 
     color: "#3D6D8E",
     
   },
   a: {
-    color: "inherit"
+    color: "black",
+    textDecoration: "none"
   },
   img: {
     width: "82px",
     height: "82px",
     paddingTop: "13px",
-    //backgroundColor: "red",
   },
 }
 

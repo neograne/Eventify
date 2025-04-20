@@ -29,12 +29,12 @@ const ProfilePage = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch('http://localhost:8000/check-auth', {
+        const response = await fetch('http://localhost:8000/check_auth', {
           credentials: 'include'
         });
 
         if (!response.ok) {
-          navigate('/auth/registration');
+          navigate('/');
           return;
         }
 

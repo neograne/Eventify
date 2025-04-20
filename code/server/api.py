@@ -107,15 +107,15 @@ async def add_user(form_data: dict) -> JSONResponse:
         return JSONResponse(content={"message": "Ползователь уже зарегестрирован"}, status_code=409)
 
 
-@router.get("/check-auth")
+@router.get("/check_auth")
 async def check_auth(request: Request):
+    print("lol")
     print(request.cookies.get("session_token"))
-    #time.sleep(5)
     try:
         await db.connect()
         data = await db.fetch_one(f"SELECT user_id FROM sessions WHERE token = '{request.cookies.get("session_token")}'")
         user_id = data["user_id"]
-
+        
         return {"isAuthenticated": True, "user": {"username": user_id}}
     except HTTPException:
-        return {"isAuthenticated": False}
+        return {"isAuthenticated": FastAPI}

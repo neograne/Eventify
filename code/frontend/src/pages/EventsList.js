@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Search from '../components/Search'; // Предполагается, что Search в отдельном файле
+import Calendar from '../components/Calendar'; // Предполагается, что Search в отдельном файле
 
 const Events = () => {
   const [allEvents, setAllEvents] = useState([]);
@@ -92,6 +93,7 @@ const Events = () => {
       )}
 
       <h2 style={styles.calendarHeader}>Календарь мероприятий</h2>
+      <Calendar events={allEvents} />
     </nav>
   );
 };

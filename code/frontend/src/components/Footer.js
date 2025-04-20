@@ -5,7 +5,7 @@ const Footer = () => {
   return (
     <nav style={styles.container}>
         <a href="/git" style={styles.logo}>
-          <img src={teamLogo} width={68}/>
+          <img src={teamLogo} width={50} alt="Team Logo"/>
           <p>В IT И ВЫЙТИ</p>
         </a>
         <ul style={styles.list}>
@@ -21,26 +21,25 @@ const styles = {
   container: {
     display: "flex",
     justifyContent: "center",
-    alignItems: 'center',
     width: "100%",
-
     fontFamily: "Montserrat",
-    height: "100px",
-
+    height: "70px",
     color: "white",
-    textAlign: "center",
     gap: "813px",
     backgroundColor: "#20516F",
+    // Убираем фиксированную позицию, так как теперь это часть flex-контейнера
+    marginTop: 'auto', // Это заставляет footer прижиматься к низу
+
   },
   list: {
     display: "flex",
     gap: "57px",
     listStyle: "none",
+    alignItems: 'center',
   },
   
   item: {
-    fontSize: "16px", // Восстанавливаем размер шрифта
-    marginRight: "10px", // Расстояние между элементами
+    marginRight: "10px",
     color: "white",
     textDecoration: "none",
     fontSize: "24px",
@@ -52,7 +51,7 @@ const styles = {
     gap: "21px",
     color: "white",
     textDecoration: "none",
-    fontSize: "32px"
+    fontSize: "32px",
   },
 }
 

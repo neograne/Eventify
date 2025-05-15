@@ -93,7 +93,7 @@ class AsyncDatabase:
         await self.execute_query(query, *(values + list(args)))
 
 
-class Users:
+"""class Users:
     def __init__(self, connection: AsyncDatabase):
         self.connection = connection
 
@@ -164,4 +164,6 @@ class Events:
     
     def update():
         ...
+
+"""
 

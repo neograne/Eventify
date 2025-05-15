@@ -26,10 +26,14 @@ const styles = {
     alignItems: 'center',
     width: "100%",
 
-    fontSize: "30px",
+    fontSize: "25px",
     fontFamily: "Montserrat",
     marginTop: "27px",
     marginBottom: "27px"
+  },
+  name: {
+    fontFamily: "Barlow Condensed",
+    fontSize: "35px",
   },
   horizontalList: {
     display: "flex",

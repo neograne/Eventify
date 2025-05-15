@@ -6,7 +6,7 @@ import meeting from "../img/meeting.png";
 import features from "../img/features.png";
 import butterfly1 from "../img/butterfly1.svg";
 import butterfly2 from "../img/butterfly2.svg";
-import girl_cries from "../img/girl_cries.png"
+import girl_cries from "../img/girl_cries.png";
 import '../fonts/fonts.css';
 
 const Main = () => {

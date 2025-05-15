@@ -1,4 +1,5 @@
 import base64
+from datetime import datetime
 import time
 from fastapi import FastAPI, Depends, HTTPException, Request, Response, APIRouter, File, UploadFile, Form
 from fastapi.responses import JSONResponse
@@ -10,6 +11,7 @@ router = APIRouter()
 
 db = AsyncDatabase("database", "username", "password", "localhost", "5432")
 
+date_format = "%Y-%m-%d"
 pepper = "123"
 SECRET_KEY = secrets.token_urlsafe(32)
 ALGORITHM = "HS256"
@@ -33,9 +35,22 @@ async def root():
     return {"message": "Добро пожаловать в API!"}
 
 
-@router.get("/user")
-async def user(email: str = "none", username: str = "none"):
-    return {"message": username}
+@router.get("/get_user_info")
+async def user(request: Request):
+    await db.connect()
+    user_id = await db.fetch_one(f"SELECT user_id FROM sessions WHERE token = '{request.cookies.get("session_token")}'")
+    user_id = user_id["user_id"]
+
+    user_data = await db.fetch_one(f"SELECT email FROM users WHERE user_id = '{user_id}'")
+    student_data = await db.fetch_one(f"SELECT full_name, birth_date, institute, study_group FROM students WHERE user_id = '{user_id}'")
+
+    with open(f"../avatars/{user_id}.png", "rb") as image_file:
+        base64_string = base64.b64encode(image_file.read()).decode('utf-8')
+
+    data = {**dict(student_data), **dict(user_data), **{"avatar": base64_string}}
+
+    
+    return data
 
 
 @router.post("/login")
@@ -47,7 +62,7 @@ async def user(form_data: dict) -> JSONResponse:
     )
 
     if user_exists:
-        data = db.fetch_one(f"SELECT email, password_hash, salt FROM users WHERE email = '{form_data['email']}'")
+        data = await db.fetch_one(f"SELECT email, password_hash, salt FROM users WHERE email = '{form_data['email']}'")
 
         if hash_password(form_data['password'], data[2]) == data[1]:
             response = JSONResponse(status_code=200)
@@ -110,8 +125,6 @@ async def add_user(form_data: dict) -> JSONResponse:
 
 @router.get("/check_auth")
 async def check_auth(request: Request):
-    print("lol")
-    print(request.cookies.get("session_token"))
     try:
         await db.connect()
         data = await db.fetch_one(f"SELECT user_id FROM sessions WHERE token = '{request.cookies.get("session_token")}'")
@@ -124,24 +137,47 @@ async def check_auth(request: Request):
 
 @router.post("/update_user_info")
 async def update_user_info(request: Request, form_data: dict):
-    print(request.cookies.get("session_token"))
-    print(form_data)
-
-    if form_data["avatar"].startswith("data:image"):
-        header, encoded_image = form_data["avatar"].split(",", 1)
-    else:
-        return JSONResponse(status_code=400, content={"message": "Некорректный формат изображения"})
-    
     try:
         await db.connect()
         data = await db.fetch_one(f"SELECT user_id FROM sessions WHERE token = '{request.cookies.get("session_token")}'")
         user_id = data["user_id"]
+        print(1)
+        if form_data["avatar"].startswith("data:image"):
+            header, encoded_image = form_data["avatar"].split(",", 1)
+            with open(f"../avatars/{user_id}.png", "wb") as file:
+                file.write(base64.b64decode(encoded_image))
+        elif form_data["avatar"].startswith("https"):
+            pass
+        else:
+            return JSONResponse(status_code=400, content={"message": "Некорректный формат изображения"})
+        
+        form_data.pop("avatar")
+        print(form_data)
+        update_data = form_data.copy()
+        update_data.pop("email")
+        update_data.pop("password")
+        print(3)
+        update_data["birth_date"] = datetime.strptime(update_data["birth_date"], date_format).date()
+        if not await db.exists("students", f"user_id = '{user_id}'"):
+            update_data["user_id"] = user_id
+            await db.insert(
+                table="students",
+                data=update_data,
+            )
+        else:
+            await db.update(
+                table="students",
+                data=update_data,
+                condition=f"user_id = '{user_id}'",
+            )
+            
+        
+        await db.update(
+            table="users",
+            data={"email": form_data['email']},
+            condition=f"user_id = '{user_id}'",
+        )
 
-        #if await db.exists("students", "")
-
-        with open(f"../avatars/{user_id}.png", "wb") as file:
-            file.write(base64.b64decode(encoded_image))
-
-
+        return JSONResponse(status_code=200, content={"message": "Данные обновлены"})
     except Exception as ex:
         print(ex)

@@ -27,8 +27,7 @@ const styles = {
     color: "white",
     gap: "813px",
     backgroundColor: "#20516F",
-    // Убираем фиксированную позицию, так как теперь это часть flex-контейнера
-    marginTop: 'auto', // Это заставляет footer прижиматься к низу
+    marginTop: 'auto',
 
   },
   list: {
@@ -51,7 +50,7 @@ const styles = {
     gap: "21px",
     color: "white",
     textDecoration: "none",
-    fontSize: "32px",
+    fontSize: "24px",
   },
 }
 

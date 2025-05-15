@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Calendar from "../components/Calendar";
+import { FaUser, FaEnvelope, FaLock, FaCalendarAlt, FaUniversity, FaUsers, FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState('info');
@@ -14,49 +16,62 @@ const ProfilePage = () => {
     newTag: ''
   });
   const [userData, setUserData] = useState({
-    avatar: 'https://via.placeholder.com/150',
-    fullName: 'Иванов Иван Иванович',
+    avatar: '',
+    full_name: '',
     email: '',
-    password: 'password123',
-    birthDate: '1990-01-01',
-    institute: 'Институт компьютерных технологий',
-    group: 'КТ-123'
+    birth_date: '',
+    institute: '',
+    study_group: ''
   });
   const [editable, setEditable] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const checkAuth = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:8000/check_auth', {
+        const authResponse = await fetch('http://localhost:8000/check_auth', {
           credentials: 'include'
         });
 
-        if (!response.ok) {
-          navigate('/');
+        if (!authResponse.ok) {
+          navigate('/auth/registration');
           return;
         }
 
-        const data = await response.json();
-        if (!data.isAuthenticated) {
+        const authData = await authResponse.json();
+        if (!authData.isAuthenticated) {
           navigate('/auth/registration');
-        } else {
-          setAuthChecked(true);
-          // Можно обновить данные пользователя из data.user
+          return;
         }
+
+        const userResponse = await fetch('http://localhost:8000/get_user_info', {
+          credentials: 'include'
+        });
+
+        if (!userResponse.ok) {
+          throw new Error('Failed to fetch user data');
+        }
+
+        const userData = await userResponse.json();
+        setUserData({
+          avatar: userData.avatar || 'https://via.placeholder.com/150',
+          full_name: userData.full_name || '',
+          email: userData.email || '',
+          birth_date: userData.birth_date || '',
+          institute: userData.institute || '',
+          study_group: userData.study_group || ''
+        });
       } catch (error) {
-        console.error('Auth check failed:', error);
-        navigate('/auth/registration');
+        console.error('Error:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    checkAuth();
+    fetchData();
   }, [navigate]);
-
-  if (!authChecked) {
-    return <div>Проверка авторизации...</div>;
-  }
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -66,7 +81,7 @@ const ProfilePage = () => {
   const handleUserInputChange = (e) => {
     const { name, value } = e.target;
     setUserData(prev => ({ ...prev, [name]: value }));
- };
+  };
 
   const handleTagAdd = () => {
     if (eventData.newTag && !eventData.tags.includes(eventData.newTag)) {
@@ -104,7 +119,14 @@ const ProfilePage = () => {
           'Content-Type': 'application/json'
         },
         credentials: 'include',
-        body: JSON.stringify(userData)
+        body: JSON.stringify({
+          full_name: userData.full_name,
+          email: userData.email,
+          birth_date: userData.birth_date,
+          institute: userData.institute,
+          study_group: userData.study_group,
+          avatar: userData.avatar,
+        })
       });
 
       if (!response.ok) {
@@ -112,9 +134,7 @@ const ProfilePage = () => {
         alert(`Ошибка при сохранении: ${errorData.message || 'Что-то пошло не так'}`);
         return;
       }
-  
-      const result = await response.json();
-      console.log('Данные успешно сохранены:', result);
+
       setEditable(false);
     } catch (error) {
       console.error('Ошибка при отправке запроса:', error);
@@ -122,125 +142,92 @@ const ProfilePage = () => {
     }
   };
 
-  // Стили
   const styles = {
     container: {
       display: 'flex',
       minHeight: '100vh',
-      fontFamily: 'Arial, sans-serif'
+      fontFamily: 'Arial, sans-serif',
+      backgroundColor: '#f5f5f5'
     },
     sidebar: {
-      width: '250px',
-      backgroundColor: '#f8f9fa',
-      padding: '20px',
-      boxShadow: '2px 0 5px rgba(0,0,0,0.1)'
+      width: '300px',
+      backgroundColor: '#20516F',
+      padding: '30px 20px',
+      color: 'white',
+      boxShadow: '2px 0 10px rgba(0,0,0,0.1)'
     },
     content: {
       flex: 1,
-      padding: '30px',
-      backgroundColor: '#ffffff'
+      padding: '40px',
+      backgroundColor: 'white',
+      borderRadius: '30px 0 0 0',
+      boxShadow: '0 0 20px rgba(0,0,0,0.1)'
     },
     tabButton: {
-      display: 'block',
+      display: 'flex',
+      alignItems: 'center',
       width: '100%',
-      padding: '12px 15px',
+      padding: '15px 20px',
       marginBottom: '10px',
       border: 'none',
-      borderRadius: '5px',
-      backgroundColor: '#e9ecef',
-      color: '#495057',
+      borderRadius: '10px',
+      backgroundColor: 'transparent',
+      color: 'white',
       cursor: 'pointer',
       textAlign: 'left',
       transition: 'all 0.3s',
-      fontSize: '16px'
+      fontSize: '18px',
+      fontWeight: '500'
     },
     activeTab: {
-      backgroundColor: '#007bff',
-      color: 'white'
+      backgroundColor: 'rgba(255,255,255,0.2)'
     },
     sectionTitle: {
-      color: '#343a40',
-      marginBottom: '20px',
-      paddingBottom: '10px',
-      borderBottom: '1px solid #dee2e6'
+      color: '#20516F',
+      fontSize: '32px',
+      marginBottom: '30px',
+      paddingBottom: '15px',
+      borderBottom: '2px solid #20516F'
     },
     formGroup: {
-      marginBottom: '20px'
+      marginBottom: '25px',
+      position: 'relative'
     },
     label: {
       display: 'block',
-      marginBottom: '8px',
+      marginBottom: '10px',
       fontWeight: '600',
-      color: '#495057'
+      color: '#20516F',
+      fontSize: '16px'
     },
     input: {
       width: '100%',
-      padding: '10px',
-      border: '1px solid #ced4da',
-      borderRadius: '4px',
-      fontSize: '16px'
-    },
-    textarea: {
-      width: '100%',
-      padding: '10px',
-      border: '1px solid #ced4da',
-      borderRadius: '4px',
-      minHeight: '150px',
-      fontSize: '16px'
-    },
-    select: {
-      width: '100%',
-      padding: '10px',
-      border: '1px solid #ced4da',
-      borderRadius: '4px',
-      fontSize: '16px',
-      backgroundColor: 'white'
-    },
-    tagContainer: {
-      display: 'flex',
-      flexWrap: 'wrap',
-      gap: '8px',
-      marginTop: '10px'
-    },
-    tag: {
-      backgroundColor: '#e9ecef',
-      padding: '5px 10px',
-      borderRadius: '20px',
-      display: 'flex',
-      alignItems: 'center'
-    },
-    removeTag: {
-      marginLeft: '5px',
-      cursor: 'pointer',
-      color: '#6c757d'
-    },
-    submitButton: {
-      backgroundColor: '#28a745',
-      color: 'white',
-      padding: '12px 20px',
-      border: 'none',
-      borderRadius: '4px',
-      cursor: 'pointer',
-      fontSize: '16px',
-      fontWeight: '600',
-      transition: 'background-color 0.3s'
-    },
-    imageUpload: {
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      height: '200px',
-      border: '2px dashed #ced4da',
+      padding: '15px 15px 15px 45px',
+      border: '2px solid #ccc',
       borderRadius: '8px',
-      marginBottom: '20px',
-      cursor: 'pointer',
-      backgroundColor: '#f8f9fa'
+      fontSize: '16px',
+      boxSizing: 'border-box',
+      height: '60px'
     },
-    imagePreview: {
-      maxWidth: '100%',
-      maxHeight: '180px',
-      borderRadius: '6px'
+    icon: {
+      position: 'absolute',
+      left: '15px',
+      top: '50%',
+      transform: 'translateY(-50%)',
+      color: '#20516F',
+      fontSize: '18px'
+    },
+    button: {
+      backgroundColor: '#20516F',
+      color: 'white',
+      padding: '15px 30px',
+      border: 'none',
+      borderRadius: '8px',
+      cursor: 'pointer',
+      fontSize: '18px',
+      fontWeight: '600',
+      transition: 'background-color 0.3s',
+      marginTop: '20px'
     },
     avatarContainer: {
       display: 'flex',
@@ -254,20 +241,30 @@ const ProfilePage = () => {
       borderRadius: '50%',
       objectFit: 'cover',
       marginBottom: '15px',
-      border: '3px solid #007bff'
+      border: '3px solid #20516F'
     },
     changeAvatarButton: {
-      backgroundColor: '#6c757d',
+      backgroundColor: '#20516F',
       color: 'white',
-      padding: '8px 15px',
+      padding: '10px 20px',
       border: 'none',
-      borderRadius: '4px',
+      borderRadius: '8px',
       cursor: 'pointer',
-      fontSize: '14px'
+      fontSize: '16px',
+      fontWeight: '500'
     },
+    eventItem: {
+      padding: '20px',
+      marginBottom: '20px',
+      border: '2px solid #20516F',
+      borderRadius: '10px',
+      backgroundColor: '#f9f9f9'
+    }
   };
 
   const renderContent = () => {
+    if (loading) return <div>Загрузка...</div>;
+
     switch(activeTab) {
       case 'info':
         return <UserInfo 
@@ -284,15 +281,15 @@ const ProfilePage = () => {
       case 'attended':
         return <AttendedEvents styles={styles} />;
       case 'calendar':
-        return <EventsCalendar styles={styles} />;
-        case 'create':
-          return <CreateEvent 
-            styles={styles} 
-            eventData={eventData}
-            handleInputChange={handleInputChange}
-            handleTagAdd={handleTagAdd}
-            handleTagRemove={handleTagRemove}
-          />;
+        return <div><h2 style={styles.sectionTitle}>Календарь мероприятий</h2><Calendar events={[]}/></div>;
+      case 'create':
+        return <CreateEvent 
+          styles={styles} 
+          eventData={eventData}
+          handleInputChange={handleInputChange}
+          handleTagAdd={handleTagAdd}
+          handleTagRemove={handleTagRemove}
+        />;
       default:
         return <UserInfo 
           styles={styles} 
@@ -308,8 +305,9 @@ const ProfilePage = () => {
 
   return (
     <div style={styles.container}>
-      {/* Боковое меню */}
       <div style={styles.sidebar}>
+        <h2 style={{textAlign: 'center', marginBottom: '40px', fontSize: '24px'}}>Мой профиль</h2>
+        
         <button 
           style={{
             ...styles.tabButton,
@@ -317,7 +315,7 @@ const ProfilePage = () => {
           }}
           onClick={() => setActiveTab('info')}
         >
-          Информация
+          Личная информация
         </button>
         
         <button 
@@ -361,7 +359,6 @@ const ProfilePage = () => {
         </button>
       </div>
       
-      {/* Основное содержимое */}
       <div style={styles.content}>
         {renderContent()}
       </div>
@@ -369,7 +366,6 @@ const ProfilePage = () => {
   );
 };
 
-// Компоненты для каждого раздела
 const UserInfo = ({ styles, userData, editable, handleInputChange, handleAvatarChange, handleSave, setEditable }) => (
   <div>
     <h2 style={styles.sectionTitle}>Личная информация</h2>
@@ -402,19 +398,21 @@ const UserInfo = ({ styles, userData, editable, handleInputChange, handleAvatarC
 
     <div style={styles.formGroup}>
       <label style={styles.label}>ФИО</label>
+      <FaUser style={styles.icon} />
       <input
         type="text"
-        name="fullName"
-        value={userData.fullName}
+        name="full_name"
+        value={userData.full_name}
         onChange={handleInputChange}
         style={styles.input}
         disabled={!editable}
+        placeholder="Введите ваше ФИО"
       />
-
     </div>
 
     <div style={styles.formGroup}>
       <label style={styles.label}>Почта</label>
+      <FaEnvelope style={styles.icon} />
       <input
         type="email"
         name="email"
@@ -422,27 +420,17 @@ const UserInfo = ({ styles, userData, editable, handleInputChange, handleAvatarC
         onChange={handleInputChange}
         style={styles.input}
         disabled={!editable}
-      />
-    </div>
-
-    <div style={styles.formGroup}>
-      <label style={styles.label}>Пароль</label>
-      <input
-        type="password"
-        name="password"
-        value={userData.password}
-        onChange={handleInputChange}
-        style={styles.input}
-        disabled={!editable}
+        placeholder="Введите вашу почту"
       />
     </div>
 
     <div style={styles.formGroup}>
       <label style={styles.label}>Дата рождения</label>
+      <FaCalendarAlt style={styles.icon} />
       <input
         type="date"
-        name="birthDate"
-        value={userData.birthDate}
+        name="birth_date"
+        value={userData.birth_date}
         onChange={handleInputChange}
         style={styles.input}
         disabled={!editable}
@@ -451,6 +439,7 @@ const UserInfo = ({ styles, userData, editable, handleInputChange, handleAvatarC
 
     <div style={styles.formGroup}>
       <label style={styles.label}>Институт</label>
+      <FaUniversity style={styles.icon} />
       <input
         type="text"
         name="institute"
@@ -458,34 +447,37 @@ const UserInfo = ({ styles, userData, editable, handleInputChange, handleAvatarC
         onChange={handleInputChange}
         style={styles.input}
         disabled={!editable}
+        placeholder="Введите ваш институт"
       />
     </div>
 
     <div style={styles.formGroup}>
       <label style={styles.label}>Группа</label>
+      <FaUsers style={styles.icon} />
       <input
         type="text"
-        name="group"
-        value={userData.group}
+        name="study_group"
+        value={userData.study_group}
         onChange={handleInputChange}
         style={styles.input}
         disabled={!editable}
+        placeholder="Введите вашу группу"
       />
     </div>
 
     {editable ? (
       <button 
-        style={styles.saveButton}
+        style={styles.button}
         onClick={handleSave}
       >
-        Сохранить
+        Сохранить изменения
       </button>
     ) : (
       <button 
-        style={styles.editButton}
+        style={styles.button}
         onClick={() => setEditable(true)}
       >
-        Редактировать
+        Редактировать профиль
       </button>
     )}
   </div>
@@ -494,15 +486,15 @@ const UserInfo = ({ styles, userData, editable, handleInputChange, handleAvatarC
 const OrganizedEvents = ({ styles }) => (
   <div>
     <h2 style={styles.sectionTitle}>Организованные мероприятия</h2>
-    <div style={{ ...styles.eventItem, padding: '15px', marginBottom: '15px', border: '1px solid #dee2e6', borderRadius: '8px' }}>
-      <h3 style={{ marginTop: 0 }}>Конференция по React</h3>
-      <p>Дата: 15.04.2024</p>
-      <p>Статус: Активно</p>
+    <div style={styles.eventItem}>
+      <h3 style={{ marginTop: 0, color: '#20516F' }}>Конференция по React</h3>
+      <p><strong>Дата:</strong> 15.04.2024</p>
+      <p><strong>Статус:</strong> Активно</p>
     </div>
-    <div style={{ ...styles.eventItem, padding: '15px', marginBottom: '15px', border: '1px solid #dee2e6', borderRadius: '8px' }}>
-      <h3 style={{ marginTop: 0 }}>Воркшоп по Node.js</h3>
-      <p>Дата: 22.04.2024</p>
-      <p>Статус: Завершено</p>
+    <div style={styles.eventItem}>
+      <h3 style={{ marginTop: 0, color: '#20516F' }}>Воркшоп по Node.js</h3>
+      <p><strong>Дата:</strong> 22.04.2024</p>
+      <p><strong>Статус:</strong> Завершено</p>
     </div>
   </div>
 );
@@ -510,33 +502,15 @@ const OrganizedEvents = ({ styles }) => (
 const AttendedEvents = ({ styles }) => (
   <div>
     <h2 style={styles.sectionTitle}>Посещенные мероприятия</h2>
-    <div style={{ ...styles.eventItem, padding: '15px', marginBottom: '15px', border: '1px solid #dee2e6', borderRadius: '8px' }}>
-      <h3 style={{ marginTop: 0 }}>Введение в Python</h3>
-      <p>Дата: 01.03.2024</p>
-      <p>Организатор: IT-клуб</p>
+    <div style={styles.eventItem}>
+      <h3 style={{ marginTop: 0, color: '#20516F' }}>Введение в Python</h3>
+      <p><strong>Дата:</strong> 01.03.2024</p>
+      <p><strong>Организатор:</strong> IT-клуб</p>
     </div>
-    <div style={{ ...styles.eventItem, padding: '15px', marginBottom: '15px', border: '1px solid #dee2e6', borderRadius: '8px' }}>
-      <h3 style={{ marginTop: 0 }}>Основы Docker</h3>
-      <p>Дата: 08.03.2024</p>
-      <p>Организатор: DevTeam</p>
-    </div>
-  </div>
-);
-
-const EventsCalendar = ({ styles }) => (
-  <div>
-    <h2 style={styles.sectionTitle}>Календарь мероприятий</h2>
-    <div style={{ 
-      padding: '20px', 
-      backgroundColor: '#f8f9fa', 
-      borderRadius: '8px',
-      textAlign: 'center',
-      minHeight: '300px',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center'
-    }}>
-      Здесь будет интерактивный календарь
+    <div style={styles.eventItem}>
+      <h3 style={{ marginTop: 0, color: '#20516F' }}>Основы Docker</h3>
+      <p><strong>Дата:</strong> 08.03.2024</p>
+      <p><strong>Организатор:</strong> DevTeam</p>
     </div>
   </div>
 );
@@ -560,13 +534,28 @@ const CreateEvent = ({ styles, eventData, handleInputChange, handleTagAdd, handl
       <h2 style={styles.sectionTitle}>Создание нового мероприятия</h2>
       
       <div style={styles.formGroup}>
-        <label style={styles.label}>Картинка и фон карточки</label>
-        <div style={styles.imageUpload}>
+        <label style={styles.label}>Картинка мероприятия</label>
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '250px',
+          border: '2px dashed #20516F',
+          borderRadius: '10px',
+          marginBottom: '20px',
+          cursor: 'pointer',
+          backgroundColor: '#f9f9f9'
+        }}>
           {imagePreview ? (
-            <img src={imagePreview} alt="Preview" style={styles.imagePreview} />
+            <img src={imagePreview} alt="Preview" style={{
+              maxWidth: '100%',
+              maxHeight: '230px',
+              borderRadius: '8px'
+            }} />
           ) : (
             <>
-              <p>Перетащите сюда изображение или кликните для выбора</p>
+              <p style={{color: '#20516F', marginBottom: '15px'}}>Перетащите сюда изображение или кликните для выбора</p>
               <input 
                 type="file" 
                 accept="image/*" 
@@ -575,11 +564,12 @@ const CreateEvent = ({ styles, eventData, handleInputChange, handleTagAdd, handl
                 id="imageUpload"
               />
               <label htmlFor="imageUpload" style={{ 
-                backgroundColor: '#007bff',
+                backgroundColor: '#20516F',
                 color: 'white',
-                padding: '8px 15px',
-                borderRadius: '4px',
-                cursor: 'pointer'
+                padding: '12px 25px',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontWeight: '500'
               }}>
                 Выбрать файл
               </label>
@@ -595,7 +585,7 @@ const CreateEvent = ({ styles, eventData, handleInputChange, handleTagAdd, handl
           name="title"
           value={eventData.title}
           onChange={handleInputChange}
-          style={styles.input}
+          style={{...styles.input, paddingLeft: '15px'}}
           placeholder="Введите название"
         />
       </div>
@@ -607,7 +597,7 @@ const CreateEvent = ({ styles, eventData, handleInputChange, handleTagAdd, handl
           name="date"
           value={eventData.date}
           onChange={handleInputChange}
-          style={styles.input}
+          style={{...styles.input, paddingLeft: '15px'}}
         />
       </div>
 
@@ -618,7 +608,7 @@ const CreateEvent = ({ styles, eventData, handleInputChange, handleTagAdd, handl
           name="organizer"
           value={eventData.organizer}
           onChange={handleInputChange}
-          style={styles.input}
+          style={{...styles.input, paddingLeft: '15px'}}
           placeholder="Ваше имя или название организации"
         />
       </div>
@@ -629,18 +619,33 @@ const CreateEvent = ({ styles, eventData, handleInputChange, handleTagAdd, handl
           name="description"
           value={eventData.description}
           onChange={handleInputChange}
-          style={styles.textarea}
+          style={{
+            width: '100%',
+            padding: '15px',
+            border: '2px solid #ccc',
+            borderRadius: '8px',
+            minHeight: '150px',
+            fontSize: '16px'
+          }}
           placeholder="Подробное описание мероприятия..."
         />
       </div>
 
       <div style={styles.formGroup}>
-        <label style={styles.label}>Уровень/Класс</label>
+        <label style={styles.label}>Уровень мероприятия</label>
         <select
           name="level"
           value={eventData.level}
           onChange={handleInputChange}
-          style={styles.select}
+          style={{
+            width: '100%',
+            padding: '15px',
+            border: '2px solid #ccc',
+            borderRadius: '8px',
+            fontSize: '16px',
+            backgroundColor: 'white',
+            color: '#20516F'
+          }}
         >
           <option value="университетский">Университетский</option>
           <option value="институтский">Институтский</option>
@@ -656,7 +661,15 @@ const CreateEvent = ({ styles, eventData, handleInputChange, handleTagAdd, handl
           name="type"
           value={eventData.type}
           onChange={handleInputChange}
-          style={styles.select}
+          style={{
+            width: '100%',
+            padding: '15px',
+            border: '2px solid #ccc',
+            borderRadius: '8px',
+            fontSize: '16px',
+            backgroundColor: 'white',
+            color: '#20516F'
+          }}
         >
           <option value="развлекательное">Развлекательное</option>
           <option value="научное">Научное</option>
@@ -668,7 +681,7 @@ const CreateEvent = ({ styles, eventData, handleInputChange, handleTagAdd, handl
 
       <div style={styles.formGroup}>
         <label style={styles.label}>Теги</label>
-        <div style={{ display: 'flex', gap: '10px' }}>
+        <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
           <input
             type="text"
             value={eventData.newTag}
@@ -678,30 +691,52 @@ const CreateEvent = ({ styles, eventData, handleInputChange, handleTagAdd, handl
                 value: e.target.value
               }
             })}
-            style={{ ...styles.input, flex: 1 }}
+            style={{ 
+              ...styles.input, 
+              flex: 1,
+              paddingLeft: '15px',
+              height: '50px'
+            }}
             placeholder="Добавьте тег"
           />
           <button 
             type="button" 
             onClick={handleTagAdd}
             style={{
-              backgroundColor: '#17a2b8',
+              backgroundColor: '#20516F',
               color: 'white',
               border: 'none',
-              borderRadius: '4px',
-              padding: '0 15px',
-              cursor: 'pointer'
+              borderRadius: '8px',
+              padding: '0 20px',
+              cursor: 'pointer',
+              fontSize: '16px',
+              fontWeight: '500'
             }}
           >
             Добавить
           </button>
         </div>
-        <div style={styles.tagContainer}>
+        <div style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: '10px'
+        }}>
           {eventData.tags.map(tag => (
-            <div key={tag} style={styles.tag}>
+            <div key={tag} style={{
+              backgroundColor: '#e9ecef',
+              padding: '8px 15px',
+              borderRadius: '20px',
+              display: 'flex',
+              alignItems: 'center',
+              color: '#20516F'
+            }}>
               {tag}
               <span 
-                style={styles.removeTag}
+                style={{
+                  marginLeft: '8px',
+                  cursor: 'pointer',
+                  color: '#20516F'
+                }}
                 onClick={() => handleTagRemove(tag)}
               >
                 ×
@@ -713,7 +748,12 @@ const CreateEvent = ({ styles, eventData, handleInputChange, handleTagAdd, handl
 
       <button 
         type="submit" 
-        style={styles.submitButton}
+        style={{
+          ...styles.button,
+          width: '100%',
+          padding: '18px',
+          fontSize: '20px'
+        }}
       >
         Создать мероприятие
       </button>

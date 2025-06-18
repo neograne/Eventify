@@ -29,14 +29,14 @@ export const useAuthCheck = () => {
         return true;
       } else {
         if (redirectIfNotAuth) {
-          navigate('/auth/registration');
+          navigate('/auth/login');
         }
         return false;
       }
     } catch (error) {
       console.error('Error checking auth:', error);
       if (redirectIfNotAuth) {
-        navigate('/auth/registration');
+        navigate('/auth/login');
       }
       return false;
     }

@@ -6,6 +6,7 @@ from fastapi.responses import JSONResponse
 from databse import AsyncDatabase
 from hashlib import sha256
 import secrets
+from pydantic import BaseModel
 
 router = APIRouter()
 
@@ -16,6 +17,16 @@ pepper = "123"
 SECRET_KEY = secrets.token_urlsafe(32)
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
+class EventCreate(BaseModel):
+    name: str
+    date: str
+    organizer: str
+    description: str
+    scale: str
+    type: str
+    tags: list[str]
+    image: str  # Base64 encoded image или URL
 
 
 #TODO: Сделать проверку куки в бд
@@ -29,7 +40,7 @@ def generate_session_token() -> str:
 def hash_password(password: str, salt: str) -> str:
     return sha256((salt + pepper + password).encode('utf-8')).hexdigest()
 
-
+ 
 @router.get("/")
 async def root():
     return {"message": "Добро пожаловать в API!"}
@@ -43,14 +54,16 @@ async def user(request: Request):
 
     user_data = await db.fetch_one(f"SELECT email FROM users WHERE user_id = '{user_id}'")
     student_data = await db.fetch_one(f"SELECT full_name, birth_date, institute, study_group FROM students WHERE user_id = '{user_id}'")
-
-    with open(f"../avatars/{user_id}.png", "rb") as image_file:
-        base64_string = base64.b64encode(image_file.read()).decode('utf-8')
+    try:
+        with open(f"../avatars/{user_id}.png", "rb") as image_file:
+            base64_string = base64.b64encode(image_file.read()).decode('utf-8')
+    except:
+        base64_string = ""
 
     data = {**dict(student_data), **dict(user_data), **{"avatar": base64_string}}
 
-    
     return data
+        
 
 
 @router.post("/login")
@@ -181,3 +194,45 @@ async def update_user_info(request: Request, form_data: dict):
         return JSONResponse(status_code=200, content={"message": "Данные обновлены"})
     except Exception as ex:
         print(ex)
+
+
+events = [
+    {
+        "id": 1,
+        "name": "Сходка подписчиков тг-канала ЧЕРЕП&CO",
+        "date": "02.07.2022",
+        "time": "12:00",
+        "image": "https://example.com/image1.jpg", 
+        "scale": "Университетский",
+        "direction": "Развлекательное",
+        "format": "Интерактивный квест",
+        "tags": ["#Пикник", "#SWAG", "#Рэп", "#Тикток"]
+    },
+    {
+        "id": 2,
+        "name": "Мероприятие 2",
+        "date": "03.07.2022",
+        "time": "14:00",
+        "image": "https://example.com/image2.jpg", 
+        "scale": "Городской",
+        "direction": "Образовательное",
+        "format": "Лекция",
+        "tags": ["#Наука", "#IT", "#Карьера"]
+    }
+    ]
+
+@router.get("/events")
+async def get_events():
+    for i in events:
+        print(i)
+    return events
+
+
+@router.post("/create_event")
+async def create_event(event: EventCreate):
+    print("lol"*30)
+    print(event)
+    event_id = len(events) + 1
+    new_event = { **event.dict(), "id": event_id, "time": event.dict()["date"].split("T")[1], "date": event.dict()["date"].split("T")[0] }
+    events.append(new_event)
+    return { "message": "Мероприятие успешно создано", "event": new_event }

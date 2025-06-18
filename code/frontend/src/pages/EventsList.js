@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import Search from '../components/Search'; // Предполагается, что Search в отдельном файле
-import Calendar from '../components/Calendar'; // Предполагается, что Search в отдельном файле
+import Search from '../components/Search';
+import Calendar from '../components/Calendar';
+import EventCard from '../components/EventCard'; // Импортируем новый компонент
 
 const Events = () => {
   const [allEvents, setAllEvents] = useState([]);
@@ -9,27 +10,19 @@ const Events = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [visibleCount, setVisibleCount] = useState(5);
-  const eventCount = 100;
+
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        // Имитация запроса к серверу
-        const mockEvents = Array.from({ length: eventCount }, (_, i) => ({
-          id: i,
-          name: `Мероприятие ${i}`,
-          date: `2025-05-${15 + Math.floor(i / 16)}`,
-          time: `${10 + (i % 5)}:00`,
-          location: `Конференц-зал ${(i % 3) + 1}`,
-          speakers: [
-            `Спикер ${i}A`,
-            i % 2 === 0 ? `Спикер ${i}B` : null
-          ].filter(Boolean)
-        }));
-
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        const response = await fetch('http://127.0.0.1:8000/events');
         
-        setAllEvents(mockEvents);
-        setDisplayedEvents(mockEvents.slice(0, visibleCount));
+        if (!response.ok) {
+          throw new Error(`Ошибка сети: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setAllEvents(data);
+        setDisplayedEvents(data.slice(0, visibleCount));
         setLoading(false);
       } catch (err) {
         setError(err.message);
@@ -47,14 +40,14 @@ const Events = () => {
   };
 
   const handleSearch = (term) => {
-    const filtered = allEvents.filter(event => 
+    const filtered = allEvents.filter(event =>
       event.name.toLowerCase().includes(term.toLowerCase()) ||
-      event.location.toLowerCase().includes(term.toLowerCase()) ||
-      event.speakers.some(speaker => 
-        speaker.toLowerCase().includes(term.toLowerCase())
-      )
+      event.scale.toLowerCase().includes(term.toLowerCase()) ||
+      event.direction.toLowerCase().includes(term.toLowerCase()) ||
+      event.format.toLowerCase().includes(term.toLowerCase()) ||
+      event.tags.some(tag => tag.toLowerCase().includes(term.toLowerCase()))
     );
-    
+
     setDisplayedEvents(filtered.slice(0, visibleCount));
   };
 
@@ -62,8 +55,7 @@ const Events = () => {
   if (error) return <div>Ошибка: {error}</div>;
   if (allEvents.length === 0) return <div>Нет доступных мероприятий</div>;
 
-  const hasMore = allEvents.length > visibleCount && 
-                 displayedEvents.length === visibleCount;
+  const hasMore = allEvents.length > visibleCount && displayedEvents.length === visibleCount;
 
   return (
     <nav style={styles.container}>
@@ -74,14 +66,7 @@ const Events = () => {
       <ul style={styles.list}>
         {displayedEvents.map(event => (
           <li key={event.id} style={styles.listItem}>
-            <Link to={`/list/event-info?id=${event.id}`} style={styles.link}>
-              {event.name}
-            </Link>
-            <div style={styles.eventDetails}>
-              <h3>Дата: {event.date}, время: {event.time}, место: {event.location}</h3>
-              <h3>Спикеры: {event.speakers.join(', ')}</h3>
-              <h3>Регистрация на мероприятие</h3>
-            </div>
+            <EventCard event={event} /> {/* Отображаем каждый event через EventCard */}
           </li>
         ))}
       </ul>
@@ -98,6 +83,7 @@ const Events = () => {
   );
 };
 
+// Стили остаются без изменений
 const styles = {
   container: {
     padding: '20px',

@@ -18,7 +18,7 @@ const Main = () => {
           <p style={{ ...styles.text, ...styles.text1 }}>Организуйте или записывайтесь на концерты, встречи, и любые другие активности!</p>
           <div style={styles.buttons1}>
             <a style={styles.loginButton} href="/auth/registration">Войти</a>
-            <a style={styles.aboutButton} href="/podrobnee">Подробнее</a>
+            <a style={styles.aboutButton} href="/about">Подробнее</a>
           </div>
         </div>
         <img src={meeting} style={styles.section1Img} alt="meeting" />
@@ -63,7 +63,7 @@ const Main = () => {
 
       <section style={{ ...styles.section5, ...styles.section }}>
         <img src={butterfly1} alt="butterfly1" style={styles.butterflyLeft} />
-        <a href="/organize" style={styles.startButton}>НАЧАТЬ ИСПОЛЬЗОВАНИЕ</a>
+        <a href="/auth/registration" style={styles.startButton}>НАЧАТЬ ИСПОЛЬЗОВАНИЕ</a>
         <img src={butterfly2} alt="butterfly2" style={styles.butterflyRight} />
       </section>
 

@@ -12,7 +12,7 @@ const LoginForm = () => {
   const navigate = useNavigate();
   const { useEffectAuthCheck } = useAuth();
   
-  //useEffectAuthCheck(true, true);
+  useEffectAuthCheck(true, true);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

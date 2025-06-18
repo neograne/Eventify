@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Calendar from "../components/Calendar";
-import { FaUser, FaEnvelope, FaLock, FaCalendarAlt, FaUniversity, FaUsers, FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState('info');
   const [eventData, setEventData] = useState({
-    title: '',
+    name: '',
     date: '',
     organizer: '',
     description: '',
-    level: 'университетский',
+    scale: 'университетский',
     type: 'развлекательное',
     tags: [],
     newTag: ''
@@ -27,6 +26,7 @@ const ProfilePage = () => {
   const [authChecked, setAuthChecked] = useState(false);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const [imagePreview, setImagePreview] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -142,6 +142,80 @@ const ProfilePage = () => {
     }
   };
 
+  const handleCreateEvent = async () => {
+  try {
+    const finalTags = eventData.tags.filter(tag => tag && tag.trim());
+
+    const payload = {
+      name: eventData.name.trim(),
+      date: eventData.date,
+      organizer: (userData.full_name || eventData.organizer).trim(),
+      description: eventData.description.trim(),
+      scale: eventData.level,
+      type: eventData.type,
+      tags: finalTags,
+      image: imagePreview || ''
+    };
+
+    // Локальная валидация
+    if (!payload.name) throw new Error('Название мероприятия обязательно');
+    if (!payload.date) throw new Error('Дата и время обязательны');
+    if (!payload.description) throw new Error('Описание обязательно');
+
+    const response = await fetch('http://localhost:8000/create_event', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include',
+      body: JSON.stringify(payload)
+    });
+
+    let result;
+    try {
+      result = await response.json();
+    } catch (jsonError) {
+      const text = await response.text();
+      throw new Error(`Ошибка парсинга JSON: ${text}`);
+    }
+
+    if (!response.ok) {
+      throw new Error(result.detail || result.message || `Ошибка сервера: ${response.status}`);
+    }
+
+    alert('Мероприятие успешно создано!');
+    console.log('Созданное мероприятие:', result);
+
+    setImagePreview(null);
+    setEventData({
+      name: '',
+      date: '',
+      organizer: '',
+      description: '',
+      scale: 'университетский',
+      type: 'развлекательное',
+      tags: [],
+      newTag: ''
+    });
+  } catch (error) {
+  console.error('Ошибка при отправке запроса:', error);
+  
+  // Получаем понятное сообщение об ошибке
+  let errorMessage = 'Произошла ошибка';
+
+  if (error.message) {
+    // Если message - объект, попробуем сериализовать его
+    try {
+      errorMessage += `: ${JSON.stringify(error.message)}`;
+    } catch {
+      errorMessage += `: ${error.message.toString()}`;
+    }
+  }
+
+  alert(errorMessage);
+}
+};
+
   const styles = {
     container: {
       display: 'flex',
@@ -150,37 +224,44 @@ const ProfilePage = () => {
       backgroundColor: '#f5f5f5'
     },
     sidebar: {
-      width: '300px',
-      backgroundColor: '#20516F',
+      width: '450px',
+      height: '700px',
       padding: '30px 20px',
-      color: 'white',
-      boxShadow: '2px 0 10px rgba(0,0,0,0.1)'
+      boxShadow: '2px 0 10px rgba(0,0,0,0.1)',
+      marginLeft: '40px',
+      marginRight: '40px',
+      border: '3px solid #20516F',
+      borderRadius: '40px',
+      
+    },
+    tabButton: {
+      alignItems: 'center',
+      width: '400px',
+      height: '70px',
+      marginBottom: '15px',
+      color: '#20516F',
+      cursor: 'pointer',
+      transition: 'all 0.5s',
+      fontSize: '20px',
+      fontWeight: '700',
+      marginLeft: '25px',
+      marginRight: '25px',
+      border: '1px solid #20516F',
+      borderRadius: '20px',
+
+      textAlign: 'center',
+
     },
     content: {
       flex: 1,
       padding: '40px',
       backgroundColor: 'white',
-      borderRadius: '30px 0 0 0',
-      boxShadow: '0 0 20px rgba(0,0,0,0.1)'
-    },
-    tabButton: {
-      display: 'flex',
-      alignItems: 'center',
-      width: '100%',
-      padding: '15px 20px',
-      marginBottom: '10px',
-      border: 'none',
-      borderRadius: '10px',
-      backgroundColor: 'transparent',
-      color: 'white',
-      cursor: 'pointer',
-      textAlign: 'left',
-      transition: 'all 0.3s',
-      fontSize: '18px',
-      fontWeight: '500'
+      borderRadius: '40px',
+      border: '3px solid #20516F',
+      marginRight: '90px'
     },
     activeTab: {
-      backgroundColor: 'rgba(255,255,255,0.2)'
+      backgroundColor: '#CEDEFF'
     },
     sectionTitle: {
       color: '#20516F',
@@ -191,23 +272,23 @@ const ProfilePage = () => {
     },
     formGroup: {
       marginBottom: '25px',
-      position: 'relative'
+      position: 'relative',
     },
     label: {
       display: 'block',
       marginBottom: '10px',
       fontWeight: '600',
       color: '#20516F',
-      fontSize: '16px'
+      fontSize: '16px',
     },
     input: {
-      width: '100%',
-      padding: '15px 15px 15px 45px',
+      padding: '15px 15px 15px 15px',
       border: '2px solid #ccc',
       borderRadius: '8px',
       fontSize: '16px',
       boxSizing: 'border-box',
-      height: '60px'
+      height: '60px',
+      width: "600px",
     },
     icon: {
       position: 'absolute',
@@ -259,7 +340,7 @@ const ProfilePage = () => {
       border: '2px solid #20516F',
       borderRadius: '10px',
       backgroundColor: '#f9f9f9'
-    }
+    },
   };
 
   const renderContent = () => {
@@ -269,8 +350,7 @@ const ProfilePage = () => {
       case 'info':
         return <UserInfo 
           styles={styles} 
-          userData={userData} 
-          editable={editable}
+          userData={userData}
           handleInputChange={handleUserInputChange}
           handleAvatarChange={handleAvatarChange}
           handleSave={handleSave}
@@ -289,12 +369,12 @@ const ProfilePage = () => {
           handleInputChange={handleInputChange}
           handleTagAdd={handleTagAdd}
           handleTagRemove={handleTagRemove}
+          handleCreateEvent={handleCreateEvent} 
         />;
       default:
         return <UserInfo 
           styles={styles} 
           userData={userData} 
-          editable={editable}
           handleInputChange={handleUserInputChange}
           handleAvatarChange={handleAvatarChange}
           handleSave={handleSave}
@@ -306,8 +386,6 @@ const ProfilePage = () => {
   return (
     <div style={styles.container}>
       <div style={styles.sidebar}>
-        <h2 style={{textAlign: 'center', marginBottom: '40px', fontSize: '24px'}}>Мой профиль</h2>
-        
         <button 
           style={{
             ...styles.tabButton,
@@ -315,7 +393,7 @@ const ProfilePage = () => {
           }}
           onClick={() => setActiveTab('info')}
         >
-          Личная информация
+          Информация
         </button>
         
         <button 
@@ -325,7 +403,7 @@ const ProfilePage = () => {
           }}
           onClick={() => setActiveTab('organized')}
         >
-          Организованные
+          Организованные мероприятия
         </button>
         
         <button 
@@ -335,7 +413,7 @@ const ProfilePage = () => {
           }}
           onClick={() => setActiveTab('attended')}
         >
-          Посещенные
+          Посещенные мероприятия
         </button>
         
         <button 
@@ -345,7 +423,7 @@ const ProfilePage = () => {
           }}
           onClick={() => setActiveTab('calendar')}
         >
-          Календарь
+          Календарь мероприятий
         </button>
         
         <button 
@@ -355,7 +433,7 @@ const ProfilePage = () => {
           }}
           onClick={() => setActiveTab('create')}
         >
-          Создать
+          Создать мероприятие
         </button>
       </div>
       
@@ -366,10 +444,8 @@ const ProfilePage = () => {
   );
 };
 
-const UserInfo = ({ styles, userData, editable, handleInputChange, handleAvatarChange, handleSave, setEditable }) => (
+const UserInfo = ({ styles, userData, handleInputChange, handleAvatarChange, handleSave }) => (
   <div>
-    <h2 style={styles.sectionTitle}>Личная информация</h2>
-    
     <div style={styles.avatarContainer}>
       <img 
         src={userData.avatar} 
@@ -382,104 +458,94 @@ const UserInfo = ({ styles, userData, editable, handleInputChange, handleAvatarC
         onChange={handleAvatarChange}
         style={{ display: 'none' }}
         id="avatarUpload"
-        disabled={!editable}
       />
       <label 
         htmlFor="avatarUpload" 
-        style={{
-          ...styles.changeAvatarButton,
-          opacity: editable ? 1 : 0.6,
-          cursor: editable ? 'pointer' : 'not-allowed'
-        }}
+        style={styles.changeAvatarButton}
       >
-        Изменить аватар
+        Изменить
       </label>
     </div>
 
     <div style={styles.formGroup}>
       <label style={styles.label}>ФИО</label>
-      <FaUser style={styles.icon} />
       <input
         type="text"
         name="full_name"
         value={userData.full_name}
         onChange={handleInputChange}
         style={styles.input}
-        disabled={!editable}
         placeholder="Введите ваше ФИО"
       />
     </div>
 
     <div style={styles.formGroup}>
-      <label style={styles.label}>Почта</label>
-      <FaEnvelope style={styles.icon} />
+      <label style={styles.label}>Email</label>
       <input
         type="email"
         name="email"
         value={userData.email}
         onChange={handleInputChange}
         style={styles.input}
-        disabled={!editable}
         placeholder="Введите вашу почту"
       />
     </div>
 
     <div style={styles.formGroup}>
       <label style={styles.label}>Дата рождения</label>
-      <FaCalendarAlt style={styles.icon} />
       <input
         type="date"
         name="birth_date"
         value={userData.birth_date}
         onChange={handleInputChange}
         style={styles.input}
-        disabled={!editable}
       />
     </div>
 
     <div style={styles.formGroup}>
       <label style={styles.label}>Институт</label>
-      <FaUniversity style={styles.icon} />
       <input
         type="text"
         name="institute"
         value={userData.institute}
         onChange={handleInputChange}
         style={styles.input}
-        disabled={!editable}
         placeholder="Введите ваш институт"
       />
     </div>
-
+ 
     <div style={styles.formGroup}>
       <label style={styles.label}>Группа</label>
-      <FaUsers style={styles.icon} />
       <input
         type="text"
         name="study_group"
         value={userData.study_group}
         onChange={handleInputChange}
         style={styles.input}
-        disabled={!editable}
         placeholder="Введите вашу группу"
       />
     </div>
 
-    {editable ? (
-      <button 
-        style={styles.button}
-        onClick={handleSave}
+    <div style={styles.formGroup}>
+      <label style={styles.label}>Пол</label>
+      <select
+        name="gender"
+        value={userData.gender}
+        onChange={handleInputChange}
+        style={styles.input}
       >
-        Сохранить изменения
-      </button>
-    ) : (
-      <button 
-        style={styles.button}
-        onClick={() => setEditable(true)}
-      >
-        Редактировать профиль
-      </button>
-    )}
+        <option value="">Выберите пол</option>
+        <option value="male">Мужской</option>
+        <option value="female">Женский</option>
+      </select>
+    </div>
+
+    <button 
+      style={styles.button}
+      onClick={handleSave}
+    >
+      Сохранить изменения
+    </button>
   </div>
 );
 
@@ -515,7 +581,7 @@ const AttendedEvents = ({ styles }) => (
   </div>
 );
 
-const CreateEvent = ({ styles, eventData, handleInputChange, handleTagAdd, handleTagRemove }) => {
+const CreateEvent = ({ styles, eventData, handleInputChange, handleTagAdd, handleTagRemove, handleCreateEvent }) => {
   const [imagePreview, setImagePreview] = useState(null);
 
   const handleImageChange = (e) => {
@@ -528,6 +594,7 @@ const CreateEvent = ({ styles, eventData, handleInputChange, handleTagAdd, handl
       reader.readAsDataURL(file);
     }
   };
+  
 
   return (
     <div>
@@ -582,8 +649,8 @@ const CreateEvent = ({ styles, eventData, handleInputChange, handleTagAdd, handl
         <label style={styles.label}>Название мероприятия</label>
         <input
           type="text"
-          name="title"
-          value={eventData.title}
+          name="name"
+          value={eventData.name}
           onChange={handleInputChange}
           style={{...styles.input, paddingLeft: '15px'}}
           placeholder="Введите название"
@@ -745,9 +812,9 @@ const CreateEvent = ({ styles, eventData, handleInputChange, handleTagAdd, handl
           ))}
         </div>
       </div>
-
       <button 
-        type="submit" 
+        type="button"
+        onClick={handleCreateEvent}
         style={{
           ...styles.button,
           width: '100%',

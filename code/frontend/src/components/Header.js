@@ -1,8 +1,9 @@
-import React from 'react';
 import logo from '../img/logo.svg';
 import '../fonts/fonts.css';
-
+import { useNavigate } from 'react-router-dom';
+import { handleEntranceClick } from '../hooks/authUtils';
 const Header = () => {
+  const navigate = useNavigate();
   return (
     <nav style={styles.container}>
       <div style={styles.box}>
@@ -12,7 +13,7 @@ const Header = () => {
         </a>
         <ul style={styles.horizontalList}>
           <li style={styles.item}><a style={styles.a} href="/list">Мероприятия</a></li>
-          <li style={styles.item}><a style={styles.a} href="/auth/login">Войти</a></li>
+          <li style={styles.item}><a style={styles.a} href="/login" onClick={(e) => { e.preventDefault(); handleEntranceClick(navigate); }}>Войти</a></li>
         </ul>
       </div>
     </nav>

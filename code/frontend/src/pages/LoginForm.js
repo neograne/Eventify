@@ -1,35 +1,32 @@
 import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../hooks/AuthContext';
+import { useRedirectIfAuthenticated } from '../hooks/authUtils';
 import { ReactComponent as MailIcon } from '../img/mail_icon.svg';
 import { ReactComponent as LockIcon } from '../img/password_icon.svg';
 import { ReactComponent as EyeIcon } from '../img/eye_icon.svg';
 import { ReactComponent as EyeSlashIcon } from '../img/eye_slash_icon.svg';
 
 const LoginForm = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
-  const navigate = useNavigate();
-  const { useEffectAuthCheck } = useAuth();
   
-  useEffectAuthCheck(true, true);
+  useRedirectIfAuthenticated(); // Перенаправление, если уже авторизован
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const response = await fetch('http://localhost:8000/login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
+        credentials: 'include', // Добавлено для консистентности
       });
-
       if (response.status === 200) {
         navigate('/profile');
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Ошибка:', error);
     }
   };
 

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Calendar from "../components/Calendar";
-
+import { useProtectProfile } from '../hooks/authUtils';
 const ProfilePage = () => {
+  useProtectProfile();
   const [activeTab, setActiveTab] = useState('info');
   const [eventData, setEventData] = useState({
     name: '',
@@ -27,7 +28,7 @@ const ProfilePage = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const [imagePreview, setImagePreview] = useState(null);
-
+  
   useEffect(() => {
     const fetchData = async () => {
       try {

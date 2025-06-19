@@ -22,7 +22,7 @@ export const handleEntranceClick = async (navigate) => {
   if (isAuth) {
     navigate('/profile');
   } else {
-    navigate('/login');
+    navigate('/auth/login');
   }
 };
 
@@ -33,7 +33,7 @@ export const useProtectProfile = () => {
     const verifyAuth = async () => {
       const isAuth = await checkAuth();
       if (!isAuth) {
-        navigate('/login');
+        navigate('/auth/login');
       }
     };
     verifyAuth();

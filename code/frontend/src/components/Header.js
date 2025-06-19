@@ -13,7 +13,7 @@ const Header = () => {
         </a>
         <ul style={styles.horizontalList}>
           <li style={styles.item}><a style={styles.a} href="/list">Мероприятия</a></li>
-          <li style={styles.item}><a style={styles.a} href="/login" onClick={(e) => { e.preventDefault(); handleEntranceClick(navigate); }}>Войти</a></li>
+          <li style={styles.item}><a style={styles.a} href="/auth/login" onClick={(e) => { e.preventDefault(); handleEntranceClick(navigate); }}>Войти</a></li>
         </ul>
       </div>
     </nav>

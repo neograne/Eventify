@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Search from '../components/Search';
 import Calendar from '../components/Calendar';
-import EventCard from '../components/EventCard'; // Импортируем новый компонент
+import EventCard from '../components/EventCard';
 
 const Events = () => {
   const [allEvents, setAllEvents] = useState([]);
@@ -11,15 +11,21 @@ const Events = () => {
   const [error, setError] = useState(null);
   const [visibleCount, setVisibleCount] = useState(5);
 
+  const [filters, setFilters] = useState({
+    type: '',
+    date: '',
+    tags: [],
+    scale: '',
+    direction: '',
+    format: '',
+    location: ''
+  });
+
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await fetch('http://127.0.0.1:8000/events');
-        
-        if (!response.ok) {
-          throw new Error(`Ошибка сети: ${response.status}`);
-        }
-
+        const response = await fetch('http://127.0.0.1:8000/events', { credentials: 'include' });
+        if (!response.ok) throw new Error(`Ошибка сети: ${response.status}`);
         const data = await response.json();
         setAllEvents(data);
         setDisplayedEvents(data.slice(0, visibleCount));
@@ -29,7 +35,6 @@ const Events = () => {
         setLoading(false);
       }
     };
-
     fetchEvents();
   }, []);
 
@@ -39,14 +44,29 @@ const Events = () => {
     setDisplayedEvents(allEvents.slice(0, newCount));
   };
 
-  const handleSearch = (term) => {
-    const filtered = allEvents.filter(event =>
-      event.name.toLowerCase().includes(term.toLowerCase()) ||
-      event.scale.toLowerCase().includes(term.toLowerCase()) ||
-      event.direction.toLowerCase().includes(term.toLowerCase()) ||
-      event.format.toLowerCase().includes(term.toLowerCase()) ||
-      event.tags.some(tag => tag.toLowerCase().includes(term.toLowerCase()))
-    );
+  const handleSearch = (term, newFilters = {}) => {
+    const updatedFilters = { ...filters, ...newFilters };
+    setFilters(updatedFilters);
+
+    const filtered = allEvents.filter(event => {
+      const matchesTerm = (event.name || '').toLowerCase().includes(term.toLowerCase()) ||
+                          (event.tags || []).some(tag => (tag || '').toLowerCase().includes(term.toLowerCase()));
+      
+      const matchesType = updatedFilters.type ? event.type === updatedFilters.type : true;
+      const matchesDate = updatedFilters.date ? event.date === updatedFilters.date : true;
+      const matchesTags = updatedFilters.tags.length > 0 
+                        ? updatedFilters.tags.every(tag => (event.tags || []).includes(tag)) 
+                        : true;
+      const matchesScale = updatedFilters.scale ? event.scale === updatedFilters.scale : true;
+      const matchesDirection = updatedFilters.direction ? event.direction === updatedFilters.direction : true;
+      const matchesFormat = updatedFilters.format ? event.format === updatedFilters.format : true;
+      const matchesLocation = updatedFilters.location 
+                            ? (event.location || '').toLowerCase().includes(updatedFilters.location.toLowerCase()) 
+                            : true;
+
+      return matchesTerm && matchesType && matchesDate && matchesTags && 
+             matchesScale && matchesDirection && matchesFormat && matchesLocation;
+    });
 
     setDisplayedEvents(filtered.slice(0, visibleCount));
   };
@@ -60,13 +80,70 @@ const Events = () => {
   return (
     <nav style={styles.container}>
       <h2>Список мероприятий</h2>
-      
       <Search events={allEvents} onSearch={handleSearch} />
-      
+
+      {/* Фильтры */}
+      <div style={styles.filters}>
+        {/* Масштаб */}
+        <select onChange={(e) => handleSearch('', { scale: e.target.value })}>
+          <option value="">Все масштабы</option>
+          <option value="small">Малое</option>
+          <option value="medium">Среднее</option>
+          <option value="large">Крупное</option>
+        </select>
+
+        {/* Направление */}
+        <select onChange={(e) => handleSearch('', { direction: e.target.value })}>
+          <option value="">Все направления</option>
+          <option value="tech">Технологии</option>
+          <option value="business">Бизнес</option>
+          <option value="art">Искусство</option>
+        </select>
+
+        {/* Формат */}
+        <select onChange={(e) => handleSearch('', { format: e.target.value })}>
+          <option value="">Все форматы</option>
+          <option value="online">Онлайн</option>
+          <option value="offline">Оффлайн</option>
+        </select>
+
+        {/* Теги (ввод через запятую) */}
+        <input
+          type="text"
+          placeholder="Теги (через запятую)"
+          value={filters.tags.join(', ')}
+          onChange={(e) => {
+            const tags = e.target.value
+              .split(',')
+              .map(tag => tag.trim())
+              .filter(tag => tag);
+            handleSearch('', { tags });
+          }}
+          style={styles.input}
+        />
+
+        {/* Дата */}
+        <input
+          type="date"
+          value={filters.date}
+          onChange={(e) => handleSearch('', { date: e.target.value })}
+          style={styles.input}
+        />
+
+        {/* Место проведения */}
+        <input 
+          type="text" 
+          placeholder="Место проведения" 
+          value={filters.location}
+          onChange={(e) => handleSearch('', { location: e.target.value })}
+          style={styles.input}
+        />
+      </div>
+
       <ul style={styles.list}>
         {displayedEvents.map(event => (
           <li key={event.id} style={styles.listItem}>
-            <EventCard event={event} /> {/* Отображаем каждый event через EventCard */}
+            <EventCard event={event} />
           </li>
         ))}
       </ul>
@@ -83,11 +160,10 @@ const Events = () => {
   );
 };
 
-// Стили остаются без изменений
 const styles = {
   container: {
     padding: '20px',
-    maxWidth: '800px',
+    width: '900px',
     margin: '0 auto'
   },
   list: {
@@ -98,17 +174,6 @@ const styles = {
     marginBottom: '20px',
     borderBottom: '1px solid #eee',
     paddingBottom: '20px'
-  },
-  link: {
-    fontSize: '18px',
-    fontWeight: 'bold',
-    color: '#2c3e50',
-    textDecoration: 'none',
-    display: 'block',
-    marginBottom: '10px'
-  },
-  eventDetails: {
-    marginLeft: '20px'
   },
   loadMoreButton: {
     display: 'block',
@@ -124,6 +189,18 @@ const styles = {
   },
   calendarHeader: {
     marginTop: '40px'
+  },
+  filters: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '10px',
+    marginBottom: '20px'
+  },
+  input: {
+    padding: '8px',
+    border: '1px solid #ccc',
+    borderRadius: '4px',
+    minWidth: '150px'
   }
 };
 

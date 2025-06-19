@@ -5,15 +5,15 @@ const EventCard = ({ event }) => {
     <div style={styles.card}>
       <img src={event.image} alt={event.name} style={styles.image} />
       <div style={styles.content}>
-        <h2 style={styles.title}>{event.name}</h2>
+        <h2 style={styles.title}>{event.event_title}</h2>
         <div style={styles.meta}>
-          <span>Дата: {event.date}</span>
-          <span>Время: {event.time}</span>
+          <span>Дата: {event.event_date}</span>
+          <span>Время: {event.event_time}</span>
         </div>
         <div style={styles.details}>
-          <p><strong>Масштаб:</strong> {event.scale}</p>
-          <p><strong>Направление:</strong> {event.direction}</p>
-          <p><strong>Формат:</strong> {event.format}</p>
+          <p><strong>Масштаб:</strong> {event.event_scale}</p>
+          <p><strong>Направление:</strong> {event.event_direction}</p>
+          <p><strong>Формат:</strong> {event.event_type}</p>
         </div>
         <div style={styles.tags}>
           {event.tags.map((tag, index) => (

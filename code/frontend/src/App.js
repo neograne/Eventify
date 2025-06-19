@@ -13,6 +13,9 @@ import Profile from './pages/Profile';
 import About from './pages/About';
 import Contacts from './pages/Contacts';
 import FAQ from './pages/FAQ';
+import OrganizedEvent from './pages/OrganizedEvent';
+
+
 import background_butterfly from "./img/background_butterfly.svg";
 
 function App() {
@@ -43,10 +46,10 @@ function MainContent() {
       backgroundPosition: 'center',
       backgroundRepeat: "no-repeat",
       
-
     }}>
       <Header />
       <Routes>
+        <Route path="/profile/event" element={<OrganizedEvent />} />
         <Route path="/" element={<Main />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/auth/login" element={<Login />} />
@@ -56,7 +59,6 @@ function MainContent() {
         <Route path="/about" element={<About />} />
         <Route path="/contacts" element={<Contacts />} />
         <Route path="/faq" element={<FAQ />} />
-
 
         <Route path="/dev/list-pages" element={<DevListPages />} />
       </Routes>

@@ -1,4 +1,7 @@
 import Misha from "../img/Misha.png"
+import Dima from "../img/Dima.png"
+import Almaz from "../img/Almaz.png"
+import Vlad from "../img/Vlad.png"
 import '../fonts/fonts.css';
 
 const Main = () => {
@@ -6,12 +9,12 @@ const Main = () => {
     <div style={styles.container}>
         <div style={styles.headerContainer}>
           <h1 style={styles.team}>Команда “В IT И ВЫЙТИ”</h1>
-          <a style={styles.githubButton} href="/about">GITHUB ПРОЕКТА</a>
+          <a style={styles.githubButton} href="https://github.com/neograne/Eventify">GITHUB ПРОЕКТА</a>
         </div>
 
         <div style={styles.authors}>
             <div style={styles.section}>
-              <img style={styles.img}/>
+              <img style={styles.img} src={Almaz} />
               <h2 style={styles.name}>Абаев Алмаз</h2>
               <h3 style={styles.role}>Тимлид</h3>
 
@@ -29,7 +32,7 @@ const Main = () => {
             </div>
 
             <div style={styles.section}>
-              <img style={styles.img}/>
+              <img style={styles.img} src={Dima} />
               <h2 style={styles.name}>Дашкин Дмитрий</h2>
               <h3 style={styles.role}>Разработчик</h3>
 
@@ -65,7 +68,7 @@ const Main = () => {
             </div>
 
             <div style={styles.section}>
-              <img style={styles.img}/>
+              <img style={styles.img} src={Vlad} />
               <h2 style={styles.name}>Комков Владислав</h2>
               <h3 style={styles.role}>Аналитик</h3>
 
@@ -152,7 +155,8 @@ const styles = {
     borderRadius: "50%",
     objectFit: "cover",
     marginBottom: "8px",
-    backgroundColor: "#CEDEFF"
+    backgroundColor: "#fefdfa",
+    border: "3px solid #3D6D8E",
   },
 
   name: {

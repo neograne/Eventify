@@ -73,7 +73,7 @@ const styles = {
     height: "1444px",
     marginLeft: "160px",
     marginRight: "220px",
-    marginBottom: "150px"
+    marginBottom: "300px"
   },
 
   section2: {

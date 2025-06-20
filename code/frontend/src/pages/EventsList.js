@@ -9,7 +9,7 @@ const Events = () => {
   const [displayedEvents, setDisplayedEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [visibleCount, setVisibleCount] = useState(5);
+  const [visibleCount, setVisibleCount] = useState(6);
 
   const [filters, setFilters] = useState({
     type: '',
@@ -39,7 +39,7 @@ const Events = () => {
   }, []);
 
   const loadMore = () => {
-    const newCount = visibleCount + 5;
+    const newCount = visibleCount + 6;
     setVisibleCount(newCount);
     setDisplayedEvents(allEvents.slice(0, newCount));
   };
@@ -87,9 +87,10 @@ const Events = () => {
         {/* Масштаб */}
         <select onChange={(e) => handleSearch('', { scale: e.target.value })}>
           <option value="">Все масштабы</option>
-          <option value="small">Малое</option>
-          <option value="medium">Среднее</option>
-          <option value="large">Крупное</option>
+          <option value="университетский">Университетский</option>
+          <option value="Институтский">Институтский</option>
+          <option value="large">Локальный</option>
+          <option value="large">Общажный</option>
         </select>
 
         {/* Направление */}
@@ -168,11 +169,12 @@ const styles = {
   },
   list: {
     listStyle: 'none',
-    padding: 0
+    padding: 0,
+    display: 'grid',
+    gridTemplateColumns: 'repeat(2, 1fr)',
+    gap: '20px'
   },
   listItem: {
-    marginBottom: '20px',
-    borderBottom: '1px solid #eee',
     paddingBottom: '20px'
   },
   loadMoreButton: {

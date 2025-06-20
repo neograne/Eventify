@@ -14,6 +14,7 @@ import About from './pages/About';
 import Contacts from './pages/Contacts';
 import FAQ from './pages/FAQ';
 import OrganizedEvent from './pages/OrganizedEvent';
+import Report from './pages/EventReport';
 
 
 import background_butterfly from "./img/background_butterfly.svg";
@@ -50,6 +51,8 @@ function MainContent() {
       <Header />
       <Routes>
         <Route path="/profile/event" element={<OrganizedEvent />} />
+        <Route path="/profile/event/report" element={<Report />} />
+        <Route path="/event" element={<EventInfo />} />
         <Route path="/" element={<Main />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/auth/login" element={<Login />} />

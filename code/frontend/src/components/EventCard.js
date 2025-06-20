@@ -1,74 +1,105 @@
-import React from 'react';
-
 const EventCard = ({ event }) => {
+  // Определяем градиенты для каждого масштаба
+  const gradients = {
+    'Университетский': 'linear-gradient(45deg, rgb(224, 255, 103), rgb(255, 157, 157))',
+    'Институтский': 'linear-gradient(45deg, rgb(198, 255, 242), rgb(18, 198, 204))',
+    'Общажный': 'linear-gradient(45deg, rgb(243, 255, 86), rgb(54, 255, 213))',
+    'Локальный': 'linear-gradient(45deg, #fddb92, #d1fdff)',
+  };
+
+  // Выбираем градиент по масштабу события, по умолчанию - университетский
+  const gradient = gradients[event.event_scale] || gradients['Университетский'];
+
+  const handleClick = () => {
+    window.location.href = `http://localhost:3000/event?id=${event.event_id}`;
+  };
+
   return (
-    <div style={styles.card}>
-      <img src={event.image} alt={event.name} style={styles.image} />
-      <div style={styles.content}>
-        <h2 style={styles.title}>{event.event_title}</h2>
-        <div style={styles.meta}>
-          <span>Дата: {event.event_date}</span>
-          <span>Время: {event.event_time}</span>
+    <div onClick={handleClick} style={{ ...styles.card, background: gradient }}>
+        <img src={event.event_image} alt={event.name} style={styles.image} />
+        <div style={styles.content}>
+          <h2 style={styles.title}>{event.event_title}</h2>
+          <div style={styles.meta}>
+            <span>Дата: <span style={{ fontWeight: 'bold' }}>{event.event_date}</span></span>
+            <span>Время: <span style={{ fontWeight: 'bold' }}>{event.event_time}</span></span>
+          </div>
+          <div style={styles.details}>
+            <p><strong>Масштаб:</strong> {event.event_scale}</p>
+            <p><strong>Направление:</strong> {event.event_direction}</p>
+            <p><strong>Формат:</strong> {event.event_format}</p>
+          </div>
+          <div style={styles.tags}>
+            {event.tags.map((tag, index) => (
+              <button key={index} style={styles.tagButton}>
+                {tag}
+              </button>
+            ))}
+          </div>
         </div>
-        <div style={styles.details}>
-          <p><strong>Масштаб:</strong> {event.event_scale}</p>
-          <p><strong>Направление:</strong> {event.event_direction}</p>
-          <p><strong>Формат:</strong> {event.event_type}</p>
-        </div>
-        <div style={styles.tags}>
-          {event.tags.map((tag, index) => (
-            <button key={index} style={styles.tagButton}>
-              {tag}
-            </button>
-          ))}
-        </div>
-      </div>
     </div>
   );
 };
 
+// Стили без фиксированного background
 const styles = {
   card: {
+    fontFamily: "Montserrat",
+    width: "575px",
+    height: "300px",
     display: 'flex',
-    backgroundColor: '#FFD54F', // Оранжевый фон
-    borderRadius: '8px',
+    borderRadius: '42px',
     padding: '16px',
     marginBottom: '20px',
     boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+    cursor: 'pointer',
   },
   image: {
-    width: '80px',
-    height: '80px',
-    borderRadius: '50%',
+    width: '150px',
+    height: '150px',
+    borderRadius: '42.4px',
     marginRight: '16px',
     objectFit: 'cover',
   },
-  content: {
-    flex: 1,
-  },
   title: {
-    fontSize: '18px',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100vh',
+    width: '370px',
+    height: '100px',
+    fontSize: '24px',
     fontWeight: 'bold',
-    marginBottom: '8px',
+    marginBottom: '11px',
+    borderBottom: "1px solid black",
+    marginTop: "0",
+    color: "#20516F",
   },
   meta: {
     display: 'flex',
     gap: '16px',
     marginBottom: '8px',
+    fontSize: "20px",
+    color: "black"
   },
   details: {
     marginBottom: '16px',
+    fontSize: "14px",
+    color: "#737373",
+    marginLeft: "-160px",
+    marginTop: "25px",
   },
   tags: {
     display: 'flex',
-    gap: '8px',
+    gap: '20px',
+    marginLeft: "-160px",
+    height: "25px"
   },
   tagButton: {
     backgroundColor: '#FFF',
     color: '#333',
     border: '1px solid #333',
     borderRadius: '20px',
-    padding: '4px 8px',
+    padding: '5px 10px',
     fontSize: '12px',
     cursor: 'pointer',
   },

@@ -8,11 +8,13 @@ const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState('info');
   const [eventData, setEventData] = useState({
     event_title: '',
+    event_image: '',
     event_date: '',
     event_organizer: '',
     event_description: '',
-    event_scale: 'университетский',
-    event_type: 'развлекательное',
+    event_scale: 'Университетский',
+    event_direction: 'Развлекательное',
+    event_format: 'Лекция',
     tags: [],
     newTag: ''
   });
@@ -165,12 +167,13 @@ const ProfilePage = () => {
       const payload = {
         event_title: eventData.event_title.trim(),
         event_date: eventData.event_date,
-        event_organizer: (userData.full_name || eventData.event_organizer).trim(),
+        event_organizer: eventData.event_organizer.trim(),
         event_description: eventData.event_description.trim(),
         event_scale: eventData.event_scale,
-        event_type: eventData.event_type,
+        event_format: eventData.event_format,
+        event_direction: eventData.event_direction,
         tags: finalTags,
-        event_image: imagePreview || ''
+        event_image: imagePreview || eventData.event_image
       };
 
       // Локальная валидация
@@ -203,13 +206,15 @@ const ProfilePage = () => {
       console.log('Созданное мероприятие:', result);
 
       setImagePreview(null);
-      setEventData({
+      setEventData({ 
         event_title: '',
+        event_image: '',
         event_date: '',
         event_organizer: '',
         event_description: '',
-        event_scale: 'университетский',
-        event_type: 'развлекательное',
+        event_scale: 'Университетский',
+        event_direction: 'Развлекательное',
+        event_format: 'Лекция',
         tags: [],
         newTag: ''
       });
@@ -380,6 +385,7 @@ const ProfilePage = () => {
           handleTagAdd={handleTagAdd}
           handleTagRemove={handleTagRemove}
           handleCreateEvent={handleCreateEvent} 
+          setEventData={setEventData}
         />;
       default:
         return <UserInfo 
@@ -455,7 +461,7 @@ const UserInfo = ({ styles, userData, handleInputChange, handleAvatarChange, han
     <h2 style={styles.sectionTitle}>Информация о пользователе</h2>
     <div style={styles.avatarContainer}>
       <img 
-        src={userData.avatar} 
+        src={`data:image/png;base64,${userData.avatar}`}
         alt="Аватар" 
         style={styles.avatar}
       />
@@ -633,29 +639,62 @@ const OrganizedEvents = ({ styles }) => {
     </div>
   );
 };
-const AttendedEvents = ({ styles }) => (
-  <div>
-    <h2 style={styles.sectionTitle}>Посещенные мероприятия</h2>
-    <div style={styles.eventItem}>
-      <h3 style={{ marginTop: 0, color: '#20516F' }}>Введение в Python</h3>
-      <p><strong>Дата:</strong> 01.03.2024</p>
-      <p><strong>Организатор:</strong> IT-клуб</p>
-    </div>
-    <div style={styles.eventItem}>
-      <h3 style={{ marginTop: 0, color: '#20516F' }}>Основы Docker</h3>
-      <p><strong>Дата:</strong> 08.03.2024</p>
-      <p><strong>Организатор:</strong> DevTeam</p>
-    </div>
-  </div>
-);
+const AttendedEvents = ({ styles }) => {
+  const [events, setEvents] = useState([]);
+  const navigate = useNavigate();
 
-const CreateEvent = ({ styles, eventData, handleInputChange, handleTagAdd, handleTagRemove, handleCreateEvent }) => {
+  useEffect(() => {
+    const fetchVisitedEvents = async () => {
+      try {
+        const response = await fetch('http://localhost:8000/visited_events', { credentials: 'include' });
+        if (!response.ok) {
+          throw new Error('Failed to fetch visited events');
+        }
+        const data = await response.json();
+        setEvents(data);
+      } catch (error) {
+        console.error('Error fetching visited events:', error);
+      }
+    };
+    fetchVisitedEvents();
+  }, []);
+
+  const handleEventClick = (eventId) => {
+    navigate(`/event?id=${eventId}`);
+  };
+
+  return (
+    <div>
+      <h2 style={styles.sectionTitle}>Посещенные мероприятия</h2>
+      {events.length === 0 ? (
+        <p>Вы еще не посетили ни одного мероприятия.</p>
+      ) : (
+        events.map(event => (
+          <div 
+            key={event.event_id} 
+            style={styles.eventItem}
+            onClick={() => handleEventClick(event.event_id)}
+          >
+            <h3 style={{ marginTop: 0, color: '#20516F' }}>{event.event_title}</h3>
+            <p><strong>Дата:</strong> {new Date(event.event_date).toLocaleDateString('ru-RU')}</p>
+            <p><strong>Время:</strong> {event.event_time}</p>
+            <p><strong>Организатор:</strong> {event.event_organizer}</p>
+          </div>
+        ))
+      )}
+    </div>
+  );
+};
+
+const CreateEvent = ({ styles, eventData, handleInputChange, handleTagAdd, handleTagRemove, handleCreateEvent, setEventData }) => {
   const [imagePreview, setImagePreview] = useState(null);
-  const handleImageChange = (e) => {
+  const handleImageChange = (e) => {  
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
+        //eventData.event_image = reader.result; // Сохраняем в state
+        setEventData(prev => ({ ...prev, event_image: reader.result }));
         setImagePreview(reader.result);
       };
       reader.readAsDataURL(file);
@@ -709,7 +748,7 @@ const CreateEvent = ({ styles, eventData, handleInputChange, handleTagAdd, handl
         </div>
       </div>
       <div style={styles.formGroup}>
-        <label style={styles.label}>Название мероприятия</label>
+        {/* <label style={styles.label}>Название мероприятия</label> */}
         <input
           type="text"
           name="event_title"
@@ -741,7 +780,7 @@ const CreateEvent = ({ styles, eventData, handleInputChange, handleTagAdd, handl
         />
       </div>
       <div style={styles.formGroup}>
-        <label style={styles.label}>Описание</label>
+        {/* <label style={styles.label}>Описание</label> */}
         <textarea
           name="event_description"
           value={eventData.event_description}
@@ -754,11 +793,11 @@ const CreateEvent = ({ styles, eventData, handleInputChange, handleTagAdd, handl
             minHeight: '150px',
             fontSize: '16px'
           }}
-          placeholder="Подробное описание мероприятия..."
+          placeholder="Описание"
         />
       </div>
       <div style={styles.formGroup}>
-        <label style={styles.label}>Уровень мероприятия</label>
+        <label style={styles.label}>Масштаб</label>
         <select
           name="event_scale"
           value={eventData.event_scale}
@@ -773,18 +812,17 @@ const CreateEvent = ({ styles, eventData, handleInputChange, handleTagAdd, handl
             color: '#20516F'
           }}
         >
-          <option value="университетский">Университетский</option>
-          <option value="институтский">Институтский</option>
-          <option value="локальный">Локальный</option>
-          <option value="городской">Городской</option>
-          <option value="федеральный">Федеральный</option>
+          <option value="Университетский">Университетский</option>
+          <option value="Институтский">Институтский</option>
+          <option value="Локальный">Локальный</option>
+          <option value="Общажный">Общажный</option>
         </select>
       </div>
       <div style={styles.formGroup}>
-        <label style={styles.label}>Тип мероприятия</label>
+        <label style={styles.label}>Направление</label>
         <select
-          name="event_type"
-          value={eventData.event_type}
+          name="event_direction"
+          value={eventData.event_direction}
           onChange={handleInputChange}
           style={{
             width: '100%',
@@ -796,11 +834,41 @@ const CreateEvent = ({ styles, eventData, handleInputChange, handleTagAdd, handl
             color: '#20516F'
           }}
         >
-          <option value="развлекательное">Развлекательное</option>
-          <option value="научное">Научное</option>
-          <option value="образовательное">Образовательное</option>
-          <option value="спортивное">Спортивное</option>
-          <option value="деловое">Деловое</option>
+          <option value="Развлекательное">Развлекательное</option>
+          <option value="Научное">Научное</option>
+          <option value="Образовательное">Образовательное</option>
+          <option value="Спортивное">Спортивное</option>
+          <option value="Деловое">Деловое</option>
+          <option value="Культурное">Культурное</option>
+          <option value="Социальное">Социальное</option>
+          <option value="Другое">Другое</option>
+        </select>
+      </div>
+      <div style={styles.formGroup}>
+        <label style={styles.label}>Формат</label>
+        <select
+          name="event_format"
+          value={eventData.event_format}
+          onChange={handleInputChange}
+          style={{
+            width: '100%',
+            padding: '15px',
+            border: '2px solid #ccc',
+            borderRadius: '8px',
+            fontSize: '16px',
+            backgroundColor: 'white',
+            color: '#20516F'
+          }}
+        >
+          <option value="Лекция">Лекция</option>
+          <option value="Интерактивный квест">Интерактивный квест</option>
+          <option value="Мастер-класс">Мастер-класс</option>
+          <option value="Воркшоп">Воркшоп</option>
+          <option value="Конференция">Конференция</option>
+          <option value="Выставка">Выставка</option>
+          <option value="Концерт">Концерт</option>
+          <option value="Спортивное мероприятие">Спортивное мероприятие</option>
+          <option value="Другое">Другое</option>
         </select>
       </div>
       <div style={styles.formGroup}>

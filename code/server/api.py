@@ -160,7 +160,6 @@ async def check_auth(request: Request):
         else:
             return {"isAuthenticated": False}
     except Exception as e:
-        #print("Error during authentication check:", e)
         return {"isAuthenticated": False}
 
 @router.post("/update_user_info")
@@ -174,13 +173,16 @@ async def update_user_info(request: Request, form_data: dict):
             with open(f"../avatars/{user_id}.png", "wb") as file:
                 file.write(base64.b64decode(encoded_image))
         elif form_data["avatar"].startswith("https"):
+            print("Image URL provided, skipping download")
             pass
         else:
             return JSONResponse(status_code=400, content={"message": "Некорректный формат изображения"})
+        
         form_data.pop("avatar")
         update_data = form_data.copy()
         update_data.pop("email")
         update_data["birth_date"] = datetime.strptime(update_data["birth_date"], date_format).date()
+
         if not await db.exists("students", "user_id = $1", user_id):
             update_data["user_id"] = user_id
             await db.insert(
@@ -191,20 +193,16 @@ async def update_user_info(request: Request, form_data: dict):
             await db.update(
                 table="students",
                 data=update_data,
-                condition="user_id = $1",
-                user_id=user_id
+                condition=f"user_id = {user_id}",
             )
         await db.update(
             table="users",
             data={"email": form_data['email']},
-            condition="user_id = $1",
-            user_id=user_id
+            condition=f"user_id = {user_id}",
         )
 
-        #print("User info updated:", update_data)
         return JSONResponse(status_code=200, content={"message": "Данные обновлены"})
     except Exception as ex:
-        #print("Error updating user info:", ex)
         return JSONResponse(status_code=500, content={"message": "Ошибка при обновлении данных"})
 
 @router.get("/events")
@@ -436,8 +434,41 @@ async def get_visited_events(request: Request):
     student = await db.fetch_one("SELECT visited_events FROM students WHERE user_id = $1", user_id)
     visited_events = student["visited_events"] if student and student["visited_events"] else []
 
+    if not visited_events:
+        return []
+
     events = await db.fetch_all(
-        "SELECT event_id, event_title, event_date, event_time, event_organizer FROM events WHERE event_id = ANY($1)",
+        """
+        SELECT 
+            event_id,
+            event_title,
+            event_date,
+            event_time,
+            event_organizer,
+            event_scale,
+            event_direction,
+            event_format,
+            COALESCE(event_image, '') AS event_image,
+            COALESCE(tags, ARRAY[]::text[]) AS tags
+        FROM events 
+        WHERE event_id = ANY($1)
+        """,
         visited_events
     )
-    return [dict(event) for event in events]
+
+    # Convert database rows to dictionaries and ensure tags is always a list
+    return [
+        {
+            "event_id": event["event_id"],
+            "event_title": event["event_title"],
+            "event_date": event["event_date"],
+            "event_time": event["event_time"] or "Не указано",
+            "event_organizer": event["event_organizer"],
+            "event_scale": event["event_scale"] or "Университетский",
+            "event_direction": event["event_direction"] or "Развлекательное",
+            "event_format": event["event_format"] or "Лекция",
+            "event_image": event["event_image"] or "https://via.placeholder.com/150",
+            "tags": event["tags"] or []
+        }
+        for event in events
+    ]

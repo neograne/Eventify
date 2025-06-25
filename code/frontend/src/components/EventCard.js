@@ -10,30 +10,33 @@ const EventCard = ({ event }) => {
   // Выбираем градиент по масштабу события, по умолчанию - университетский
   const gradient = gradients[event.event_scale] || gradients['Университетский'];
 
-  const handleClick = () => {
-    window.location.href = `http://localhost:3000/event?id=${event.event_id}`;
-  };
+  // Ensure tags is an array, default to empty array if undefined or null
+  const tags = Array.isArray(event.tags) ? event.tags : [];
 
   return (
-    <div onClick={handleClick} style={{ ...styles.card, background: gradient }}>
-        <img src={event.event_image} alt={event.name} style={styles.image} />
+    <div style={{ ...styles.card, background: gradient }}>
+        <img src={event.event_image || 'https://via.placeholder.com/150'} alt={event.event_title} style={styles.image} />
         <div style={styles.content}>
           <h2 style={styles.title}>{event.event_title}</h2>
           <div style={styles.meta}>
             <span>Дата: <span style={{ fontWeight: 'bold' }}>{event.event_date}</span></span>
-            <span>Время: <span style={{ fontWeight: 'bold' }}>{event.event_time}</span></span>
+            <span>Время: <span style={{ fontWeight: 'bold' }}>{event.event_time || 'Не указано'}</span></span>
           </div>
           <div style={styles.details}>
-            <p><strong>Масштаб:</strong> {event.event_scale}</p>
-            <p><strong>Направление:</strong> {event.event_direction}</p>
-            <p><strong>Формат:</strong> {event.event_format}</p>
+            <p><strong>Масштаб:</strong> {event.event_scale || 'Не указано'}</p>
+            <p><strong>Направление:</strong> {event.event_direction || 'Не указано'}</p>
+            <p><strong>Формат:</strong> {event.event_format || 'Не указано'}</p>
           </div>
           <div style={styles.tags}>
-            {event.tags.map((tag, index) => (
-              <button key={index} style={styles.tagButton}>
-                {tag}
-              </button>
-            ))}
+            {tags.length > 0 ? (
+              tags.map((tag, index) => (
+                <button key={index} style={styles.tagButton}>
+                  {tag}
+                </button>
+              ))
+            ) : (
+              <p style={{ color: '#737373', fontSize: '12px' }}>Теги отсутствуют</p>
+            )}
           </div>
         </div>
     </div>

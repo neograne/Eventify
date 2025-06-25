@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Calendar from "../components/Calendar";
+import EventCard from "../components/EventCard"; // Import EventCard component
 import { useProtectProfile } from '../hooks/authUtils';
 
 const ProfilePage = () => {
@@ -372,7 +373,7 @@ const ProfilePage = () => {
           setEditable={setEditable}
         />;
       case 'organized':
-        return <OrganizedEvents styles={styles} />;
+        return <OrganizedEvents styles={styles} navigate={navigate} />;
       case 'attended':
         return <AttendedEvents styles={styles} />;
       case 'calendar':
@@ -461,7 +462,11 @@ const UserInfo = ({ styles, userData, handleInputChange, handleAvatarChange, han
     <h2 style={styles.sectionTitle}>Информация о пользователе</h2>
     <div style={styles.avatarContainer}>
       <img 
-        src={`data:image/png;base64,${userData.avatar}`}
+        src={
+          userData.avatar.startsWith('data:') || userData.avatar.startsWith('http:') || userData.avatar.startsWith('https:')
+            ? userData.avatar
+            : `data:image/png;base64,${userData.avatar}`
+        }
         alt="Аватар" 
         style={styles.avatar}
       />
@@ -597,9 +602,8 @@ const UserInfo = ({ styles, userData, handleInputChange, handleAvatarChange, han
   </div>
 );
 
-const OrganizedEvents = ({ styles }) => {
+const OrganizedEvents = ({ styles, navigate }) => {
   const [events, setEvents] = useState([]);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchOrganizedEvents = async () => {
@@ -616,32 +620,27 @@ const OrganizedEvents = ({ styles }) => {
     };
     fetchOrganizedEvents();
   }, []);
-  
-
-  const handleEventClick = (eventId) => {
-    navigate(`/profile/event?id=${eventId}`);
-  };
 
   return (
     <div>
       <h2 style={styles.sectionTitle}>Организованные мероприятия</h2>
-      {events.map(event => (
-        <div 
-          key={event.event_id} 
-          style={styles.eventItem}
-          onClick={() => handleEventClick(event.event_id)}
-        >
-          <h3 style={{ marginTop: 0, color: '#20516F' }}>{event.event_title}</h3>
-          <p><strong>Дата:</strong> {event.event_date}</p>
-          <p><strong>Статус:</strong> {event.status || 'Активно'}</p>
+      {events.length === 0 ? (
+        <p>Вы еще не организовали ни одного мероприятия.</p>
+      ) : (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
+          {events.map(event => (
+            <div key={event.event_id} onClick={() => navigate(`/profile/event?id=${event.event_id}`)}>
+              <EventCard event={event} />
+            </div>
+          ))}
         </div>
-      ))}
+      )}
     </div>
   );
 };
+
 const AttendedEvents = ({ styles }) => {
   const [events, setEvents] = useState([]);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchVisitedEvents = async () => {
@@ -651,6 +650,7 @@ const AttendedEvents = ({ styles }) => {
           throw new Error('Failed to fetch visited events');
         }
         const data = await response.json();
+        console.log('Fetched events:', data); // Log the data
         setEvents(data);
       } catch (error) {
         console.error('Error fetching visited events:', error);
@@ -659,28 +659,17 @@ const AttendedEvents = ({ styles }) => {
     fetchVisitedEvents();
   }, []);
 
-  const handleEventClick = (eventId) => {
-    navigate(`/event?id=${eventId}`);
-  };
-
   return (
     <div>
       <h2 style={styles.sectionTitle}>Посещенные мероприятия</h2>
       {events.length === 0 ? (
         <p>Вы еще не посетили ни одного мероприятия.</p>
       ) : (
-        events.map(event => (
-          <div 
-            key={event.event_id} 
-            style={styles.eventItem}
-            onClick={() => handleEventClick(event.event_id)}
-          >
-            <h3 style={{ marginTop: 0, color: '#20516F' }}>{event.event_title}</h3>
-            <p><strong>Дата:</strong> {new Date(event.event_date).toLocaleDateString('ru-RU')}</p>
-            <p><strong>Время:</strong> {event.event_time}</p>
-            <p><strong>Организатор:</strong> {event.event_organizer}</p>
-          </div>
-        ))
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
+          {events.map(event => (
+            <EventCard key={event.event_id} event={event} />
+          ))}
+        </div>
       )}
     </div>
   );
@@ -693,7 +682,6 @@ const CreateEvent = ({ styles, eventData, handleInputChange, handleTagAdd, handl
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        //eventData.event_image = reader.result; // Сохраняем в state
         setEventData(prev => ({ ...prev, event_image: reader.result }));
         setImagePreview(reader.result);
       };
@@ -748,7 +736,6 @@ const CreateEvent = ({ styles, eventData, handleInputChange, handleTagAdd, handl
         </div>
       </div>
       <div style={styles.formGroup}>
-        {/* <label style={styles.label}>Название мероприятия</label> */}
         <input
           type="text"
           name="event_title"
@@ -780,7 +767,6 @@ const CreateEvent = ({ styles, eventData, handleInputChange, handleTagAdd, handl
         />
       </div>
       <div style={styles.formGroup}>
-        {/* <label style={styles.label}>Описание</label> */}
         <textarea
           name="event_description"
           value={eventData.event_description}
